@@ -34,6 +34,7 @@
       --shadow-sm: 0 1px 2px rgba(23,23,21,0.04), 0 1px 1px rgba(23,23,21,0.03);
       --shadow-md: 0 8px 24px -8px rgba(23,23,21,0.12), 0 2px 6px -2px rgba(23,23,21,0.06);
       --nav-w: 232px;
+      --surface-glass: rgba(255,255,255,0.72);
       /* Colores semánticos de texto/ícono: en modo oscuro se aclaran para mantener
          contraste AA sobre fondos oscuros (las variantes -dk/-bg son para botones sólidos). */
       --pos: var(--green-dk);
@@ -65,6 +66,7 @@
         --neg: #F87171;
         --neu: #60A5FA;
         --amber-text: #FBBF24;
+        --surface-glass: rgba(34,34,32,0.72);
       }
     }
 
@@ -128,10 +130,15 @@
     /* Navegación — móvil: tab bar fija abajo. Escritorio: barra lateral. */
     .nav-tabs {
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
-      background: var(--surface); padding: 6px; border-top: 0.5px solid var(--border);
+      background: var(--surface-glass);
+      backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+      padding: 6px; border-top: 0.5px solid var(--border);
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
       padding-bottom: calc(6px + env(safe-area-inset-bottom));
       box-shadow: 0 -6px 20px -10px rgba(0,0,0,0.18);
+    }
+    @media (prefers-reduced-transparency: reduce) {
+      .nav-tabs { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
     }
     .nav-tab {
       position: relative;
@@ -210,6 +217,7 @@
       75% { transform: translateX(3px); }
     }
     @media (prefers-reduced-motion: reduce) { input.campo-error, select.campo-error { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .mov-item { transition: none !important; } }
 
     .chk-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); margin-top: 4px; }
     input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--green); }
@@ -251,11 +259,23 @@
     .hist-chip:hover:not(.activo) { background: var(--surface2); }
 
     .mov-list { display: flex; flex-direction: column; gap: 6px; }
+
+    /* Fila con swipe-to-delete: el elemento visible (.mov-item) se traslada con el dedo
+       para revelar la acción roja que queda fija detrás. Solo se activa con touch/pen;
+       el mouse conserva el ícono de basura al hacer hover, sin tocar este mecanismo. */
+    .mov-row { position: relative; border-radius: var(--radius); overflow: hidden; }
+    .mov-row-action {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 84px;
+      background: var(--red-dk); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 19px;
+    }
     .mov-item {
+      position: relative;
       background: var(--surface); border: 0.5px solid var(--border);
       border-radius: var(--radius); padding: 12px 14px;
       display: flex; align-items: center; gap: 12px;
       transition: border-color 0.15s, box-shadow 0.15s;
+      touch-action: pan-y;
     }
     .mov-item:hover { border-color: var(--border2); box-shadow: var(--shadow-sm); }
     .mov-item:hover .btn-del { opacity: 1; }
@@ -308,9 +328,28 @@
     .sum-val { font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
 
     /* Modal */
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
-    .overlay.abierto { display: flex; }
-    .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem; width: 100%; max-width: 340px; border: 0.5px solid var(--border2); box-shadow: var(--shadow-md); }
+    .overlay {
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 1rem;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .overlay.abierto { opacity: 1; visibility: visible; pointer-events: auto; }
+    .modal {
+      background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem; width: 100%; max-width: 340px;
+      border: 0.5px solid var(--border2); box-shadow: var(--shadow-md);
+      transform: scale(0.94) translateY(6px); opacity: 0;
+      transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease;
+    }
+    .overlay.abierto .modal { transform: scale(1) translateY(0); opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      .overlay, .modal { transition: opacity 0.15s linear; }
+      .modal { transform: none; }
+    }
+    @media (prefers-reduced-transparency: reduce) {
+      .overlay { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
     .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
     .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 1rem; line-height: 1.5; }
     .modal-actions { display: flex; gap: 8px; margin-top: 1rem; }
@@ -321,10 +360,13 @@
       background: var(--text); color: var(--bg);
       padding: 10px 20px; border-radius: 999px;
       font-size: 13px; font-weight: 500; z-index: 200;
-      opacity: 0; transition: opacity 0.25s, transform 0.25s;
+      opacity: 0; transition: opacity 0.2s ease, transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
       pointer-events: none; white-space: nowrap;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .toast { transition: opacity 0.15s linear; transform: translateX(-50%) !important; }
+    }
 
     .export-bar { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 0.75rem; flex-wrap: wrap; }
     .export-bar .group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -755,22 +797,124 @@
       var desc = m.descripcion || (esIng ? 'Ingreso' : esGas ? 'Gasto' : 'Movimiento de reserva');
 
       html +=
-        '<div class="mov-item">' +
-          '<div class="mov-icon ' + iconClass + '"><i class="ti ' + iconName + '"></i></div>' +
-          '<div class="mov-info">' +
-            '<div class="mov-desc">' + escaparHTML(desc) + '</div>' +
-            '<div class="mov-meta">' +
-              (m.fecha ? '<span>' + m.fecha + '</span>' : '') +
-              badgeCat + badgePend +
+        '<div class="mov-row">' +
+          '<div class="mov-row-action" data-id="' + m.id + '"><i class="ti ti-trash"></i></div>' +
+          '<div class="mov-item" data-id="' + m.id + '">' +
+            '<div class="mov-icon ' + iconClass + '"><i class="ti ' + iconName + '"></i></div>' +
+            '<div class="mov-info">' +
+              '<div class="mov-desc">' + escaparHTML(desc) + '</div>' +
+              '<div class="mov-meta">' +
+                (m.fecha ? '<span>' + m.fecha + '</span>' : '') +
+                badgeCat + badgePend +
+              '</div>' +
             '</div>' +
+            '<div class="mov-amt ' + amtClass + '">' + signo + formato(m.monto) + '</div>' +
+            '<button class="btn-del" onclick="eliminarMovimiento(\'' + m.id + '\')" title="Eliminar">' +
+              '<i class="ti ti-trash"></i>' +
+            '</button>' +
           '</div>' +
-          '<div class="mov-amt ' + amtClass + '">' + signo + formato(m.monto) + '</div>' +
-          '<button class="btn-del" onclick="eliminarMovimiento(\'' + m.id + '\')" title="Eliminar">' +
-            '<i class="ti ti-trash"></i>' +
-          '</button>' +
         '</div>';
     }
     lista.innerHTML = html;
+    activarSwipe(lista);
+  }
+
+  // ── SWIPE PARA ELIMINAR (solo touch/pen; el mouse sigue usando hover + ícono) ──
+  var ANCHO_ACCION = 84;
+  var filaAbierta = null; // .mov-item actualmente revelado, para cerrarlo si se abre otro
+
+  function rubberband(overshoot, dimension, constante) {
+    constante = constante || 0.55;
+    var signo = overshoot < 0 ? -1 : 1;
+    var abs = Math.abs(overshoot);
+    return signo * (abs * dimension * constante) / (dimension + constante * abs);
+  }
+
+  function cerrarFila(item, animar) {
+    if (animar === false) { item.style.transition = 'none'; } else { item.style.transition = ''; }
+    item.style.transform = 'translateX(0px)';
+    item.dataset.abierta = '0';
+    if (filaAbierta === item) filaAbierta = null;
+  }
+
+  function activarSwipe(contenedor) {
+    var items = contenedor.querySelectorAll('.mov-item');
+    for (var idx = 0; idx < items.length; idx++) {
+      (function(item) {
+        var id = item.getAttribute('data-id');
+        var accion = contenedor.querySelector('.mov-row-action[data-id="' + id + '"]');
+        var arrancando = false, decidido = null, startX = 0, startY = 0, startTx = 0;
+        var lastX = 0, lastT = 0, velocidad = 0;
+
+        item.addEventListener('pointerdown', function(e) {
+          if (e.pointerType === 'mouse') return; // desktop: sin cambios, usa hover
+          arrancando = true; decidido = null;
+          startX = lastX = e.clientX; startY = e.clientY; lastT = performance.now();
+          // Leer la posición real en pantalla (no el destino) por si se agarra en pleno settle
+          var m = getComputedStyle(item).transform;
+          var match = m && m !== 'none' ? m.match(/matrix\(([^)]+)\)/) : null;
+          startTx = match ? parseFloat(match[1].split(',')[4]) : 0;
+          item.style.transform = 'translateX(' + startTx + 'px)';
+          item.style.transition = 'none';
+        });
+
+        item.addEventListener('pointermove', function(e) {
+          if (!arrancando) return;
+          var dx = e.clientX - startX, dy = e.clientY - startY;
+
+          if (decidido === null) {
+            if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { decidido = false; arrancando = false; return; }
+            if (Math.abs(dx) > 10) { decidido = true; item.setPointerCapture(e.pointerId); }
+            else return;
+          }
+          if (!decidido) return;
+
+          e.preventDefault();
+          var ahora = performance.now();
+          var dt = ahora - lastT;
+          if (dt > 0) velocidad = (e.clientX - lastX) / dt * 1000; // px/s
+          lastX = e.clientX; lastT = ahora;
+
+          var libre = startTx + dx;
+          var tx = libre;
+          if (libre < -ANCHO_ACCION) tx = -ANCHO_ACCION + rubberband(libre + ANCHO_ACCION, ANCHO_ACCION);
+          else if (libre > 0) tx = rubberband(libre, ANCHO_ACCION);
+          item.style.transform = 'translateX(' + tx + 'px)';
+        });
+
+        function soltar(e) {
+          if (!arrancando) return;
+          arrancando = false;
+          if (!decidido) return;
+          item.releasePointerCapture(e.pointerId);
+
+          var actual = item.style.transform.match(/-?\d+(\.\d+)?/);
+          var tx = actual ? parseFloat(actual[0]) : 0;
+          var abrir = velocidad < -300 || (tx < -ANCHO_ACCION / 2 && velocidad < 300);
+
+          item.style.transition = 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)';
+          if (abrir) {
+            if (filaAbierta && filaAbierta !== item) cerrarFila(filaAbierta);
+            item.style.transform = 'translateX(-' + ANCHO_ACCION + 'px)';
+            item.dataset.abierta = '1';
+            filaAbierta = item;
+          } else {
+            cerrarFila(item);
+          }
+        }
+        item.addEventListener('pointerup', soltar);
+        item.addEventListener('pointercancel', soltar);
+
+        // Si la fila ya está abierta, un toque la cierra en vez de dejarla así
+        item.addEventListener('click', function(e) {
+          if (item.dataset.abierta === '1') { e.preventDefault(); e.stopPropagation(); cerrarFila(item); }
+        }, true);
+
+        if (accion) {
+          accion.addEventListener('click', function() { eliminarMovimiento(id); });
+        }
+      })(items[idx]);
+    }
   }
 
   // ── REGISTRAR INGRESO ──
