@@ -34,6 +34,12 @@
       --shadow-sm: 0 1px 2px rgba(23,23,21,0.04), 0 1px 1px rgba(23,23,21,0.03);
       --shadow-md: 0 8px 24px -8px rgba(23,23,21,0.12), 0 2px 6px -2px rgba(23,23,21,0.06);
       --nav-w: 232px;
+      /* Colores semánticos de texto/ícono: en modo oscuro se aclaran para mantener
+         contraste AA sobre fondos oscuros (las variantes -dk/-bg son para botones sólidos). */
+      --pos: var(--green-dk);
+      --neg: var(--red);
+      --neu: var(--blue);
+      --amber-text: var(--amber);
     }
 
     @media (prefers-color-scheme: dark) {
@@ -46,13 +52,19 @@
         --border2:  rgba(255,255,255,0.16);
         --text:     #f2f1ec;
         --text2:    #a3a29a;
-        --text3:    #706f68;
+        --text3:    #94938a;
         --green-bg: #0d3d2c;
         --red-bg:   #3d1414;
         --blue-bg:  #0d2440;
         --amber-bg: #3d2c0a;
         --shadow-sm: 0 1px 2px rgba(0,0,0,0.35);
         --shadow-md: 0 10px 28px -10px rgba(0,0,0,0.55);
+        /* Variantes claras para texto/íconos: las -dk originales quedan casi invisibles
+           sobre superficies oscuras (ratio ~2:1), estas cumplen AA (>4.5:1). */
+        --pos: #34D399;
+        --neg: #F87171;
+        --neu: #60A5FA;
+        --amber-text: #FBBF24;
       }
     }
 
@@ -77,7 +89,7 @@
     .nav-tab:active, .hist-chip:active, .res-chip:active { transform: scale(0.95); }
 
     :focus-visible {
-      outline: 2px solid var(--green-dk); outline-offset: 2px; border-radius: 6px;
+      outline: 2px solid var(--pos); outline-offset: 2px; border-radius: 6px;
     }
 
     .wrapper { max-width: 720px; margin: 0 auto; padding: 1rem 1rem calc(5.5rem + env(safe-area-inset-bottom)); }
@@ -108,8 +120,8 @@
     .metric-lbl { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
     .metric-lbl i { font-size: 14px; }
     .metric-val { font-size: 21px; font-weight: 650; color: var(--text); word-break: break-all; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-    .metric-val.pos { color: var(--green-dk); }
-    .metric-val.neg { color: var(--red); }
+    .metric-val.pos { color: var(--pos); }
+    .metric-val.neg { color: var(--neg); }
     .metric-lnk { font-size: 11px; color: var(--text3); margin-top: 5px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; display: inline-block; }
     .metric-lnk:hover { color: var(--text2); }
 
@@ -130,11 +142,11 @@
       font-family: inherit; min-width: 0; white-space: nowrap; overflow: hidden;
     }
     .nav-tab i { font-size: 19px; }
-    .nav-tab.activo { color: var(--green-dk); font-weight: 600; }
+    .nav-tab.activo { color: var(--pos); font-weight: 600; }
     .nav-tab:hover:not(.activo) { background: var(--surface2); color: var(--text2); }
     .nav-tab.activo::before {
       content: ""; position: absolute; top: 1px; left: 50%; width: 18px; height: 3px;
-      background: var(--green-dk); border-radius: 999px; transform: translateX(-50%);
+      background: var(--pos); border-radius: 999px; transform: translateX(-50%);
     }
 
     /* Escritorio: sidebar fija a la izquierda, contenido a la derecha */
@@ -154,7 +166,7 @@
       }
       .nav-tab i { font-size: 18px; }
       .nav-tab.activo { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
-      .nav-tab.activo i { color: var(--green-dk); }
+      .nav-tab.activo i { color: var(--pos); }
       .nav-tab.activo::before { display: none; }
     }
 
@@ -183,13 +195,13 @@
       width: 100%; outline: none; transition: border-color 0.15s;
     }
     input:focus, select:focus, textarea:focus {
-      border-color: var(--green-dk); box-shadow: 0 0 0 3px rgba(15,110,86,0.15);
+      border-color: var(--pos); box-shadow: 0 0 0 3px color-mix(in srgb, var(--pos) 20%, transparent);
     }
     textarea { resize: vertical; min-height: 60px; }
     select { appearance: none; cursor: pointer; }
 
     input.campo-error, select.campo-error {
-      border-color: var(--red); box-shadow: 0 0 0 3px rgba(163,45,45,0.14);
+      border-color: var(--neg); box-shadow: 0 0 0 3px color-mix(in srgb, var(--neg) 18%, transparent);
       animation: shake 0.32s ease-in-out;
     }
     @keyframes shake {
@@ -222,7 +234,7 @@
     .btn-ghost:hover { background: var(--surface2); }
     .btn-del {
       background: none; border: 0.5px solid var(--border);
-      color: var(--red); padding: 6px 10px; border-radius: var(--radius);
+      color: var(--neg); padding: 6px 10px; border-radius: var(--radius);
       cursor: pointer; font-size: 15px; transition: background 0.15s;
       opacity: 0; flex-shrink: 0; font-family: inherit;
     }
@@ -250,23 +262,23 @@
 
     .mov-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .mov-icon.ing { background: var(--green-bg); }
-    .mov-icon.ing i { color: var(--green-dk); font-size: 17px; }
+    .mov-icon.ing i { color: var(--pos); font-size: 17px; }
     .mov-icon.gas { background: var(--red-bg); }
-    .mov-icon.gas i { color: var(--red); font-size: 17px; }
+    .mov-icon.gas i { color: var(--neg); font-size: 17px; }
     .mov-icon.res { background: var(--blue-bg); }
-    .mov-icon.res i { color: var(--blue); font-size: 17px; }
+    .mov-icon.res i { color: var(--neu); font-size: 17px; }
 
     .mov-info { flex: 1; min-width: 0; }
     .mov-desc { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .mov-meta { font-size: 12px; color: var(--text2); margin-top: 3px; display: flex; gap: 7px; flex-wrap: wrap; }
 
     .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; background: var(--surface2); color: var(--text2); }
-    .badge.pend { background: var(--amber-bg); color: var(--amber); }
+    .badge.pend { background: var(--amber-bg); color: var(--amber-text); }
 
     .mov-amt { font-size: 15px; font-weight: 600; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-    .mov-amt.pos   { color: var(--green-dk); }
-    .mov-amt.neg   { color: var(--red); }
-    .mov-amt.neu   { color: var(--blue); }
+    .mov-amt.pos   { color: var(--pos); }
+    .mov-amt.neg   { color: var(--neg); }
+    .mov-amt.neu   { color: var(--neu); }
     .mov-amt.muted { color: var(--text3); }
 
     .empty { text-align: center; padding: 3rem 1rem; color: var(--text3); display: flex; flex-direction: column; align-items: center; gap: 12px; }
@@ -276,8 +288,8 @@
     /* Reserva — clase .res-chip separada */
     .res-hero { display: flex; align-items: center; gap: 14px; margin-bottom: 1rem; }
     .res-hero-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .res-hero-icon i { color: var(--blue); font-size: 24px; }
-    .res-amount { font-size: 30px; font-weight: 700; color: var(--blue-dk); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .res-hero-icon i { color: var(--neu); font-size: 24px; }
+    .res-amount { font-size: 30px; font-weight: 700; color: var(--neu); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
     .res-sub { font-size: 13px; color: var(--text2); }
     .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.25rem 0; }
 
@@ -325,7 +337,7 @@
       display: flex; align-items: center; gap: 12px; transition: border-color 0.15s, box-shadow 0.15s;
     }
     .month-item:hover { border-color: var(--border2); box-shadow: var(--shadow-sm); }
-    .month-item.activo { border-color: var(--green-dk); background: var(--green-bg); }
+    .month-item.activo { border-color: var(--pos); background: var(--green-bg); }
     .month-icon {
       width: 38px; height: 38px; border-radius: 50%; background: var(--surface2);
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -335,8 +347,8 @@
     .month-name { font-size: 14px; font-weight: 600; color: var(--text); text-transform: capitalize; }
     .month-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
     .month-net { font-size: 15px; font-weight: 600; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-    .month-net.pos { color: var(--green-dk); }
-    .month-net.neg { color: var(--red); }
+    .month-net.pos { color: var(--pos); }
+    .month-net.neg { color: var(--neg); }
 
     .month-detail { margin-top: 1rem; }
     .month-detail-title { font-size: 14px; font-weight: 600; margin-bottom: 0.75rem; text-transform: capitalize; display: flex; align-items: center; gap: 8px; }
@@ -419,7 +431,7 @@
   <!-- Panel: Ingreso -->
   <div class="panel" id="panel-ingreso">
     <div class="card">
-      <div class="card-title" style="color:var(--green-dk)">
+      <div class="card-title" style="color:var(--pos)">
         <i class="ti ti-cash-banknote"></i> Registrar ingreso
       </div>
       <div class="form-grid">
@@ -461,7 +473,7 @@
   <!-- Panel: Gasto -->
   <div class="panel" id="panel-gasto">
     <div class="card">
-      <div class="card-title" style="color:var(--red)">
+      <div class="card-title" style="color:var(--neg)">
         <i class="ti ti-receipt"></i> Registrar gasto
       </div>
       <div class="form-grid">
@@ -891,9 +903,9 @@
 
     var html =
       '<div class="sum-row"><span class="sum-lbl">Saldo disponible</span><span class="sum-val">' + formato(saldo) + '</span></div>' +
-      '<div class="sum-row"><span class="sum-lbl">Ingresos cobrados (mes)</span><span class="sum-val" style="color:var(--green-dk)">+' + formato(totMes.ing) + '</span></div>' +
-      '<div class="sum-row"><span class="sum-lbl">Gastos (mes)</span><span class="sum-val" style="color:var(--red)">-' + formato(totMes.gas) + '</span></div>' +
-      '<div class="sum-row"><span class="sum-lbl">Fondo de emergencia</span><span class="sum-val" style="color:var(--blue)">' + formato(estado.reserva) + '</span></div>';
+      '<div class="sum-row"><span class="sum-lbl">Ingresos cobrados (mes)</span><span class="sum-val" style="color:var(--pos)">+' + formato(totMes.ing) + '</span></div>' +
+      '<div class="sum-row"><span class="sum-lbl">Gastos (mes)</span><span class="sum-val" style="color:var(--neg)">-' + formato(totMes.gas) + '</span></div>' +
+      '<div class="sum-row"><span class="sum-lbl">Fondo de emergencia</span><span class="sum-val" style="color:var(--neu)">' + formato(estado.reserva) + '</span></div>';
 
     if (sorted.length > 0) {
       html += '<p style="font-size:12px;color:var(--text3);margin:12px 0 4px">Gastos por categoría este mes</p>';
@@ -1015,14 +1027,14 @@
     var html =
       '<hr class="divider">' +
       '<div class="month-detail-title"><i class="ti ti-calendar-event"></i> Detalle de ' + nombreMes(clave) + '</div>' +
-      '<div class="sum-row"><span class="sum-lbl">Ingresos cobrados</span><span class="sum-val" style="color:var(--green-dk)">+' + formato(datos.ing) + '</span></div>' +
-      '<div class="sum-row"><span class="sum-lbl">Gastos</span><span class="sum-val" style="color:var(--red)">-' + formato(datos.gas) + '</span></div>';
+      '<div class="sum-row"><span class="sum-lbl">Ingresos cobrados</span><span class="sum-val" style="color:var(--pos)">+' + formato(datos.ing) + '</span></div>' +
+      '<div class="sum-row"><span class="sum-lbl">Gastos</span><span class="sum-val" style="color:var(--neg)">-' + formato(datos.gas) + '</span></div>';
 
     if (datos.pendiente > 0) {
-      html += '<div class="sum-row"><span class="sum-lbl">Ingresos pendientes de cobro</span><span class="sum-val" style="color:var(--amber)">' + formato(datos.pendiente) + '</span></div>';
+      html += '<div class="sum-row"><span class="sum-lbl">Ingresos pendientes de cobro</span><span class="sum-val" style="color:var(--amber-text)">' + formato(datos.pendiente) + '</span></div>';
     }
 
-    html += '<div class="sum-row"><span class="sum-lbl">Resultado del mes</span><span class="sum-val" style="color:' + (neto >= 0 ? 'var(--green-dk)' : 'var(--red)') + '">' + (neto >= 0 ? '+' : '') + formato(neto) + '</span></div>';
+    html += '<div class="sum-row"><span class="sum-lbl">Resultado del mes</span><span class="sum-val" style="color:' + (neto >= 0 ? 'var(--pos)' : 'var(--neg)') + '">' + (neto >= 0 ? '+' : '') + formato(neto) + '</span></div>';
 
     if (sortedCats.length > 0) {
       html += '<p style="font-size:12px;color:var(--text3);margin:12px 0 4px">Gastos por categoría</p>';
