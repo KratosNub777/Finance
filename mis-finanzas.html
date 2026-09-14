@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Finanzas — Ingresos Variables</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f5f5f3;
+      --surface:   #ffffff;
+      --surface2:  #f0efeb;
+      --border:    rgba(0,0,0,0.10);
+      --border2:   rgba(0,0,0,0.18);
+      --text:      #1a1a18;
+      --text2:     #6b6b67;
+      --text3:     #9b9b96;
+      --green:     #1D9E75;
+      --green-dk:  #0F6E56;
+      --green-bg:  #E1F5EE;
+      --red:       #A32D2D;
+      --red-dk:    #791F1F;
+      --red-bg:    #FCEBEB;
+      --blue:      #185FA5;
+      --blue-dk:   #0C447C;
+      --blue-bg:   #E6F1FB;
+      --amber-bg:  #FAEEDA;
+      --amber:     #854F0B;
+      --radius:    10px;
+      --radius-lg: 14px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:       #1a1a18;
+        --surface:  #252523;
+        --surface2: #2e2e2b;
+        --border:   rgba(255,255,255,0.10);
+        --border2:  rgba(255,255,255,0.18);
+        --text:     #f0efeb;
+        --text2:    #a0a09a;
+        --text3:    #6b6b67;
+        --green-bg: #0a3d2a;
+        --red-bg:   #3d1010;
+        --blue-bg:  #0a2040;
+        --amber-bg: #3d2a05;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .wrapper { max-width: 680px; margin: 0 auto; padding: 1rem 1rem 5rem; }
+
+    /* Header */
+    .header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 1.25rem 0;
+      border-bottom: 0.5px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+    .hdr-icon {
+      width: 42px; height: 42px; border-radius: var(--radius);
+      background: var(--green); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .hdr-icon i { color: #fff; font-size: 22px; }
+    .hdr-title { font-size: 18px; font-weight: 600; }
+    .hdr-sub { font-size: 13px; color: var(--text2); margin-top: 1px; }
+
+    /* Métricas */
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+    @media (max-width: 480px) { .metrics { grid-template-columns: 1fr; } }
+    .metric { background: var(--surface2); border-radius: var(--radius); padding: 14px 16px; }
+    .metric-lbl { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+    .metric-lbl i { font-size: 14px; }
+    .metric-val { font-size: 20px; font-weight: 600; color: var(--text); word-break: break-all; }
+    .metric-val.pos { color: var(--green-dk); }
+    .metric-val.neg { color: var(--red); }
+    .metric-lnk { font-size: 11px; color: var(--text3); margin-top: 5px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; display: inline-block; }
+    .metric-lnk:hover { color: var(--text2); }
+
+    /* Tabs — clase .nav-tab para evitar conflicto con palabra "tab" */
+    .nav-tabs {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+      background: var(--surface2); padding: 4px; border-radius: var(--radius);
+      margin-bottom: 1.25rem;
+    }
+    .nav-tab {
+      padding: 9px 2px; font-size: 12px; text-align: center;
+      border-radius: 7px; cursor: pointer; color: var(--text2);
+      border: none; background: none; transition: background 0.15s, color 0.15s;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+      font-family: inherit; min-width: 0; white-space: nowrap; overflow: hidden;
+    }
+    .nav-tab i { font-size: 17px; }
+    .nav-tab.activo { background: var(--surface); border: 0.5px solid var(--border2); color: var(--text); font-weight: 500; }
+    .nav-tab:hover:not(.activo) { background: rgba(0,0,0,0.05); }
+
+    @media (max-width: 460px) {
+      .nav-tabs { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; }
+      .nav-tab { font-size: 11px; padding: 8px 2px; }
+      .nav-tab i { font-size: 16px; }
+    }
+
+    /* Paneles */
+    .panel { display: none; }
+    .panel.activo { display: block; }
+
+    /* Cards */
+    .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+    .card-title { font-size: 14px; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+    .card-title i { font-size: 17px; }
+
+    /* Formularios */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 420px) { .form-grid { grid-template-columns: 1fr; } }
+    .fg { display: flex; flex-direction: column; gap: 5px; }
+    .fg.full { grid-column: 1 / -1; }
+    label { font-size: 12px; color: var(--text2); font-weight: 500; }
+
+    input[type=text], input[type=number], input[type=date], select, textarea {
+      font-size: 14px; font-family: inherit;
+      background: var(--surface2); border: 0.5px solid var(--border2);
+      border-radius: var(--radius); padding: 9px 12px; color: var(--text);
+      width: 100%; outline: none; transition: border-color 0.15s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,0.15);
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    select { appearance: none; cursor: pointer; }
+
+    .chk-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); margin-top: 4px; }
+    input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--green); }
+
+    .form-actions { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+
+    /* Botones */
+    .btn {
+      padding: 9px 18px; border-radius: var(--radius); font-size: 14px;
+      cursor: pointer; font-family: inherit; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: background 0.15s, transform 0.1s; border: none;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-g  { background: var(--green); color: #fff; }
+    .btn-g:hover  { background: var(--green-dk); }
+    .btn-r  { background: var(--red);   color: #fff; }
+    .btn-r:hover  { background: var(--red-dk); }
+    .btn-b  { background: var(--blue);  color: #fff; }
+    .btn-b:hover  { background: var(--blue-dk); }
+    .btn-ghost { background: none; border: 0.5px solid var(--border2); color: var(--text); }
+    .btn-ghost:hover { background: var(--surface2); }
+    .btn-del {
+      background: none; border: 0.5px solid var(--border);
+      color: var(--red); padding: 6px 10px; border-radius: var(--radius);
+      cursor: pointer; font-size: 15px; transition: background 0.15s;
+      opacity: 0; flex-shrink: 0; font-family: inherit;
+    }
+    .btn-del:hover { background: var(--red-bg); }
+
+    /* Historial — clase .hist-chip para NO interferir con .chip del panel reserva */
+    .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+    .hist-chip {
+      padding: 5px 13px; border-radius: 999px; font-size: 12px; font-weight: 500;
+      cursor: pointer; border: 0.5px solid var(--border2); background: none;
+      color: var(--text2); transition: all 0.15s; font-family: inherit;
+    }
+    .hist-chip.activo { background: var(--text); color: var(--bg); border-color: transparent; }
+    .hist-chip:hover:not(.activo) { background: var(--surface2); }
+
+    .mov-list { display: flex; flex-direction: column; gap: 6px; }
+    .mov-item {
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      display: flex; align-items: center; gap: 12px;
+      transition: border-color 0.15s;
+    }
+    .mov-item:hover { border-color: var(--border2); }
+    .mov-item:hover .btn-del { opacity: 1; }
+
+    .mov-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mov-icon.ing { background: var(--green-bg); }
+    .mov-icon.ing i { color: var(--green-dk); font-size: 17px; }
+    .mov-icon.gas { background: var(--red-bg); }
+    .mov-icon.gas i { color: var(--red); font-size: 17px; }
+    .mov-icon.res { background: var(--blue-bg); }
+    .mov-icon.res i { color: var(--blue); font-size: 17px; }
+
+    .mov-info { flex: 1; min-width: 0; }
+    .mov-desc { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mov-meta { font-size: 12px; color: var(--text2); margin-top: 3px; display: flex; gap: 7px; flex-wrap: wrap; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; background: var(--surface2); color: var(--text2); }
+    .badge.pend { background: var(--amber-bg); color: var(--amber); }
+
+    .mov-amt { font-size: 15px; font-weight: 600; flex-shrink: 0; }
+    .mov-amt.pos   { color: var(--green-dk); }
+    .mov-amt.neg   { color: var(--red); }
+    .mov-amt.neu   { color: var(--blue); }
+    .mov-amt.muted { color: var(--text3); }
+
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--text3); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .empty i { font-size: 44px; }
+    .empty p { font-size: 14px; line-height: 1.6; }
+
+    /* Reserva — clase .res-chip separada */
+    .res-hero { display: flex; align-items: center; gap: 14px; margin-bottom: 1rem; }
+    .res-hero-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .res-hero-icon i { color: var(--blue); font-size: 24px; }
+    .res-amount { font-size: 30px; font-weight: 700; color: var(--blue); }
+    .res-sub { font-size: 13px; color: var(--text2); }
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.25rem 0; }
+
+    .mode-bar { display: flex; gap: 6px; margin-bottom: 1rem; }
+    .res-chip {
+      padding: 5px 13px; border-radius: 999px; font-size: 12px; font-weight: 500;
+      cursor: pointer; border: 0.5px solid var(--border2); background: none;
+      color: var(--text2); transition: all 0.15s; font-family: inherit;
+    }
+    .res-chip.activo { background: var(--blue); color: #fff; border-color: transparent; }
+    .res-chip:hover:not(.activo) { background: var(--surface2); }
+
+    .sum-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
+    .sum-row:last-child { border-bottom: none; }
+    .sum-lbl { font-size: 13px; color: var(--text2); }
+    .sum-val { font-size: 13px; font-weight: 600; color: var(--text); }
+
+    /* Modal */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+    .overlay.abierto { display: flex; }
+    .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem; width: 100%; max-width: 340px; border: 0.5px solid var(--border2); }
+    .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 1rem; line-height: 1.5; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 1rem; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(10px);
+      background: var(--text); color: var(--bg);
+      padding: 10px 20px; border-radius: 999px;
+      font-size: 13px; font-weight: 500; z-index: 200;
+      opacity: 0; transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .export-bar { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .export-bar .group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Meses */
+    .month-list { display: flex; flex-direction: column; gap: 6px; }
+    .month-item {
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px; cursor: pointer;
+      display: flex; align-items: center; gap: 12px; transition: border-color 0.15s;
+    }
+    .month-item:hover { border-color: var(--border2); }
+    .month-item.activo { border-color: var(--green); background: var(--green-bg); }
+    .month-icon {
+      width: 38px; height: 38px; border-radius: 50%; background: var(--surface2);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .month-icon i { font-size: 17px; color: var(--text2); }
+    .month-info { flex: 1; min-width: 0; }
+    .month-name { font-size: 14px; font-weight: 600; color: var(--text); text-transform: capitalize; }
+    .month-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .month-net { font-size: 15px; font-weight: 600; flex-shrink: 0; }
+    .month-net.pos { color: var(--green-dk); }
+    .month-net.neg { color: var(--red); }
+
+    .month-detail { margin-top: 1rem; }
+    .month-detail-title { font-size: 14px; font-weight: 600; margin-bottom: 0.75rem; text-transform: capitalize; display: flex; align-items: center; gap: 8px; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="hdr-icon"><i class="ti ti-wallet"></i></div>
+    <div>
+      <div class="hdr-title">Mis Finanzas</div>
+      <div class="hdr-sub">Gestión para ingresos variables</div>
+    </div>
+  </div>
+
+  <!-- Métricas -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-lbl"><i class="ti ti-cash"></i> Saldo disponible</div>
+      <div class="metric-val" id="m-saldo">Gs. 0</div>
+      <span class="metric-lnk" onclick="abrirModal()">Editar saldo inicial</span>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl"><i class="ti ti-trending-up"></i> Ingresos del mes</div>
+      <div class="metric-val pos" id="m-ing">Gs. 0</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl"><i class="ti ti-trending-down"></i> Gastos del mes</div>
+      <div class="metric-val neg" id="m-gas">Gs. 0</div>
+    </div>
+  </div>
+
+  <!-- Navegación de pestañas -->
+  <div class="nav-tabs" role="tablist">
+    <button class="nav-tab activo" id="ntab-historial" onclick="mostrarPanel('historial')" role="tab" aria-selected="true">
+      <i class="ti ti-list"></i> Historial
+    </button>
+    <button class="nav-tab" id="ntab-ingreso" onclick="mostrarPanel('ingreso')" role="tab" aria-selected="false">
+      <i class="ti ti-plus"></i> Ingreso
+    </button>
+    <button class="nav-tab" id="ntab-gasto" onclick="mostrarPanel('gasto')" role="tab" aria-selected="false">
+      <i class="ti ti-minus"></i> Gasto
+    </button>
+    <button class="nav-tab" id="ntab-reserva" onclick="mostrarPanel('reserva')" role="tab" aria-selected="false">
+      <i class="ti ti-piggy-bank"></i> Reserva
+    </button>
+    <button class="nav-tab" id="ntab-meses" onclick="mostrarPanel('meses')" role="tab" aria-selected="false">
+      <i class="ti ti-calendar-stats"></i> Meses
+    </button>
+  </div>
+
+  <!-- Panel: Historial -->
+  <div class="panel activo" id="panel-historial">
+    <div class="export-bar">
+      <div class="group">
+        <button class="btn btn-ghost" onclick="exportarCSV()" style="font-size:13px;padding:7px 14px;">
+          <i class="ti ti-download"></i> Exportar CSV
+        </button>
+        <button class="btn btn-ghost" onclick="document.getElementById('input-csv').click()" style="font-size:13px;padding:7px 14px;">
+          <i class="ti ti-upload"></i> Importar CSV
+        </button>
+        <input type="file" id="input-csv" accept=".csv,text/csv" style="display:none" onchange="importarCSV(event)">
+      </div>
+    </div>
+    <div class="filter-bar" id="filter-bar">
+      <button class="hist-chip activo" onclick="aplicarFiltro('todos', this)">Todos</button>
+      <button class="hist-chip" onclick="aplicarFiltro('ingreso', this)">Ingresos</button>
+      <button class="hist-chip" onclick="aplicarFiltro('egreso', this)">Gastos</button>
+      <button class="hist-chip" onclick="aplicarFiltro('reserva', this)">Reserva</button>
+    </div>
+    <div class="mov-list" id="lista-movimientos"></div>
+  </div>
+
+  <!-- Panel: Ingreso -->
+  <div class="panel" id="panel-ingreso">
+    <div class="card">
+      <div class="card-title" style="color:var(--green-dk)">
+        <i class="ti ti-cash-banknote"></i> Registrar ingreso
+      </div>
+      <div class="form-grid">
+        <div class="fg">
+          <label for="i-fecha">Fecha</label>
+          <input type="date" id="i-fecha">
+        </div>
+        <div class="fg">
+          <label for="i-monto">Monto (Gs.)</label>
+          <input type="number" id="i-monto" placeholder="0" min="0">
+        </div>
+        <div class="fg full">
+          <label for="i-desc">Descripción / cliente</label>
+          <input type="text" id="i-desc" placeholder="Ej: Venta factura #123, comisión mes…">
+        </div>
+        <div class="fg full">
+          <label for="i-cat">Categoría</label>
+          <select id="i-cat">
+            <option>Venta directa</option>
+            <option>Comisión</option>
+            <option>Servicio</option>
+            <option>Otro ingreso</option>
+          </select>
+        </div>
+        <div class="fg full">
+          <div class="chk-row">
+            <input type="checkbox" id="i-cobrado" checked>
+            <label for="i-cobrado">Ya cobrado — suma al saldo disponible ahora</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-g" onclick="registrarIngreso()"><i class="ti ti-check"></i> Registrar</button>
+        <button class="btn btn-ghost" onclick="limpiarIngreso()">Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Gasto -->
+  <div class="panel" id="panel-gasto">
+    <div class="card">
+      <div class="card-title" style="color:var(--red)">
+        <i class="ti ti-receipt"></i> Registrar gasto
+      </div>
+      <div class="form-grid">
+        <div class="fg">
+          <label for="g-fecha">Fecha</label>
+          <input type="date" id="g-fecha">
+        </div>
+        <div class="fg">
+          <label for="g-monto">Monto (Gs.)</label>
+          <input type="number" id="g-monto" placeholder="0" min="0">
+        </div>
+        <div class="fg full">
+          <label for="g-desc">Descripción</label>
+          <input type="text" id="g-desc" placeholder="Ej: Nafta, almuerzo, mercadería…">
+        </div>
+        <div class="fg full">
+          <label for="g-cat">Categoría</label>
+          <select id="g-cat">
+            <option>Transporte</option>
+            <option>Mercadería</option>
+            <option>Alimentación</option>
+            <option>Gustos / personal</option>
+            <option>Servicios (luz, agua, internet)</option>
+            <option>Alquiler</option>
+            <option>Salud</option>
+            <option>Educación</option>
+            <option>Otro gasto</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-r" onclick="registrarGasto()"><i class="ti ti-minus"></i> Registrar</button>
+        <button class="btn btn-ghost" onclick="limpiarGasto()">Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Reserva -->
+  <div class="panel" id="panel-reserva">
+    <div class="card">
+      <div class="res-hero">
+        <div class="res-hero-icon"><i class="ti ti-piggy-bank"></i></div>
+        <div>
+          <div class="res-sub">Fondo de emergencia</div>
+          <div class="res-amount" id="r-display">Gs. 0</div>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--text2)">Dinero separado del saldo disponible para meses de bajas ventas.</p>
+      <hr class="divider">
+      <div class="mode-bar">
+        <button class="res-chip activo" id="rchip-mover" onclick="setModoReserva('mover', this)">Mover a reserva</button>
+        <button class="res-chip" id="rchip-retirar" onclick="setModoReserva('retirar', this)">Retirar de reserva</button>
+      </div>
+      <div class="form-grid">
+        <div class="fg">
+          <label id="r-label">Monto a mover</label>
+          <input type="number" id="r-monto" placeholder="0" min="0">
+        </div>
+        <div class="fg">
+          <label for="r-nota">Nota (opcional)</label>
+          <input type="text" id="r-nota" placeholder="Ej: Reserva julio…">
+        </div>
+      </div>
+      <div class="form-actions" style="margin-top:1rem">
+        <button class="btn btn-b" onclick="moverReserva()"><i class="ti ti-check"></i> Confirmar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-pie"></i> Resumen del mes</div>
+      <div id="resumen-mes"></div>
+    </div>
+  </div>
+
+  <!-- Panel: Meses -->
+  <div class="panel" id="panel-meses">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-calendar-stats"></i> Ingresos y gastos por mes</div>
+      <div class="month-list" id="lista-meses"></div>
+      <div class="month-detail" id="detalle-mes"></div>
+    </div>
+  </div>
+
+</div><!-- /wrapper -->
+
+<!-- Modal saldo inicial -->
+<div class="overlay" id="overlay-saldo" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-title">Configurar saldo inicial</div>
+    <div class="modal-sub">Este valor es el dinero que tenés disponible ahora mismo. Ajustarlo no borra los movimientos registrados.</div>
+    <div class="fg">
+      <label for="modal-saldo">Saldo inicial (Gs.)</label>
+      <input type="number" id="modal-saldo" placeholder="0" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-g" onclick="guardarSaldo()">Guardar</button>
+      <button class="btn btn-ghost" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast-msg"></div>
+
+<script>
+  // ── CLAVE DE ALMACENAMIENTO ──
+  var STORAGE_KEY = 'mf-datos-v2';
+
+  // ── ESTADO GLOBAL ──
+  var estado = { saldoInicial: 0, reserva: 0, movimientos: [] };
+  var filtroActivo = 'todos';
+  var modoReserva = 'mover';
+  var mesSeleccionado = null;
+
+  // Nombres de mes en español (usados por renderizarMeses, debe existir antes de iniciar())
+  var NOMBRES_MES = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
+  // ── CARGA INICIAL ──
+  (function iniciar() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) { estado = JSON.parse(raw); }
+    } catch (e) { /* primera vez, se usa el estado vacío */ }
+    renderizar();
+  })();
+
+  // ── GUARDAR EN localStorage ──
+  function guardar() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+    } catch (e) {
+      mostrarToast('No se pudo guardar. El almacenamiento puede estar lleno.');
+    }
+  }
+
+  // ── CÁLCULOS ──
+  function calcularSaldo() {
+    var s = estado.saldoInicial;
+    for (var i = 0; i < estado.movimientos.length; i++) {
+      var m = estado.movimientos[i];
+      if (m.tipo === 'ingreso' && m.cobrado)  s += m.monto;
+      if (m.tipo === 'egreso')                 s -= m.monto;
+      if (m.tipo === 'reserva-entrada')        s -= m.monto;
+      if (m.tipo === 'reserva-salida')         s += m.monto;
+    }
+    return s;
+  }
+
+  function obtenerMesActual() {
+    var d = new Date();
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    return d.getFullYear() + '-' + mm;
+  }
+
+  function calcularMes() {
+    var mes = obtenerMesActual();
+    var ing = 0, gas = 0;
+    for (var i = 0; i < estado.movimientos.length; i++) {
+      var m = estado.movimientos[i];
+      if (!m.fecha || m.fecha.substring(0, 7) !== mes) continue;
+      if (m.tipo === 'ingreso' && m.cobrado) ing += m.monto;
+      if (m.tipo === 'egreso')               gas += m.monto;
+    }
+    return { ing: ing, gas: gas };
+  }
+
+  // ── UTILIDADES ──
+  function formato(n) {
+    return 'Gs. ' + Math.round(n).toLocaleString('es-PY');
+  }
+
+  function fechaHoy() {
+    var d = new Date();
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    var dd = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + mm + '-' + dd;
+  }
+
+  function generarId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+
+  function escaparHTML(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── RENDER PRINCIPAL ──
+  function renderizar() {
+    var saldo = calcularSaldo();
+    var mes   = calcularMes();
+
+    // Métricas superiores
+    var elSaldo = document.getElementById('m-saldo');
+    elSaldo.textContent = formato(saldo);
+    elSaldo.className   = 'metric-val' + (saldo < 0 ? ' neg' : '');
+    document.getElementById('m-ing').textContent = formato(mes.ing);
+    document.getElementById('m-gas').textContent = formato(mes.gas);
+    document.getElementById('r-display').textContent = formato(estado.reserva);
+
+    renderizarLista();
+    renderizarResumen();
+    renderizarMeses();
+  }
+
+  // ── HISTORIAL ──
+  function aplicarFiltro(filtro, boton) {
+    filtroActivo = filtro;
+    // Solo actualizar los chips del filter-bar del historial
+    var chips = document.querySelectorAll('#filter-bar .hist-chip');
+    for (var i = 0; i < chips.length; i++) {
+      chips[i].classList.remove('activo');
+    }
+    boton.classList.add('activo');
+    renderizarLista();
+  }
+
+  function renderizarLista() {
+    var lista = document.getElementById('lista-movimientos');
+    // Copiar y revertir para mostrar el más reciente primero
+    var movs = estado.movimientos.slice().reverse();
+
+    // Aplicar filtro
+    if (filtroActivo === 'ingreso') {
+      movs = movs.filter(function(m) { return m.tipo === 'ingreso'; });
+    } else if (filtroActivo === 'egreso') {
+      movs = movs.filter(function(m) { return m.tipo === 'egreso'; });
+    } else if (filtroActivo === 'reserva') {
+      movs = movs.filter(function(m) { return m.tipo === 'reserva-entrada' || m.tipo === 'reserva-salida'; });
+    }
+
+    if (movs.length === 0) {
+      lista.innerHTML =
+        '<div class="empty">' +
+          '<i class="ti ti-inbox-off"></i>' +
+          '<p>No hay movimientos para mostrar.<br>Usá las pestañas para registrar ingresos o gastos.</p>' +
+        '</div>';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < movs.length; i++) {
+      var m = movs[i];
+      var esIng = m.tipo === 'ingreso';
+      var esGas = m.tipo === 'egreso';
+
+      var iconClass = esIng ? 'ing' : esGas ? 'gas' : 'res';
+      var iconName  = esIng ? 'ti-arrow-down-circle'
+                    : esGas ? 'ti-arrow-up-circle'
+                    : (m.tipo === 'reserva-salida' ? 'ti-arrow-down-circle' : 'ti-piggy-bank');
+
+      var signo    = esIng ? (m.cobrado ? '+' : '') : esGas ? '-' : (m.tipo === 'reserva-salida' ? '+' : '-');
+      var amtClass = esIng ? (m.cobrado ? 'pos' : 'muted') : esGas ? 'neg' : 'neu';
+
+      var badgePend = (esIng && !m.cobrado)
+        ? '<span class="badge pend">Pendiente de cobro</span>' : '';
+      var badgeCat = m.categoria
+        ? '<span class="badge">' + escaparHTML(m.categoria) + '</span>' : '';
+      var desc = m.descripcion || (esIng ? 'Ingreso' : esGas ? 'Gasto' : 'Movimiento de reserva');
+
+      html +=
+        '<div class="mov-item">' +
+          '<div class="mov-icon ' + iconClass + '"><i class="ti ' + iconName + '"></i></div>' +
+          '<div class="mov-info">' +
+            '<div class="mov-desc">' + escaparHTML(desc) + '</div>' +
+            '<div class="mov-meta">' +
+              (m.fecha ? '<span>' + m.fecha + '</span>' : '') +
+              badgeCat + badgePend +
+            '</div>' +
+          '</div>' +
+          '<div class="mov-amt ' + amtClass + '">' + signo + formato(m.monto) + '</div>' +
+          '<button class="btn-del" onclick="eliminarMovimiento(\'' + m.id + '\')" title="Eliminar">' +
+            '<i class="ti ti-trash"></i>' +
+          '</button>' +
+        '</div>';
+    }
+    lista.innerHTML = html;
+  }
+
+  // ── REGISTRAR INGRESO ──
+  function registrarIngreso() {
+    var fecha   = document.getElementById('i-fecha').value || fechaHoy();
+    var monto   = parseFloat(document.getElementById('i-monto').value);
+    var desc    = document.getElementById('i-desc').value.trim();
+    var cat     = document.getElementById('i-cat').value;
+    var cobrado = document.getElementById('i-cobrado').checked;
+
+    if (!monto || monto <= 0) { mostrarToast('Ingresá un monto válido'); return; }
+
+    estado.movimientos.push({
+      id: generarId(), tipo: 'ingreso', fecha: fecha, monto: monto,
+      descripcion: desc || 'Ingreso', categoria: cat, cobrado: cobrado
+    });
+    guardar();
+    renderizar();
+    limpiarIngreso();
+    mostrarToast('Ingreso registrado ✓');
+    mostrarPanel('historial');
+  }
+
+  function limpiarIngreso() {
+    document.getElementById('i-fecha').value = '';
+    document.getElementById('i-monto').value = '';
+    document.getElementById('i-desc').value  = '';
+    document.getElementById('i-cobrado').checked = true;
+  }
+
+  // ── REGISTRAR GASTO ──
+  function registrarGasto() {
+    var fecha = document.getElementById('g-fecha').value || fechaHoy();
+    var monto = parseFloat(document.getElementById('g-monto').value);
+    var desc  = document.getElementById('g-desc').value.trim();
+    var cat   = document.getElementById('g-cat').value;
+
+    if (!monto || monto <= 0) { mostrarToast('Ingresá un monto válido'); return; }
+    if (calcularSaldo() < monto) { mostrarToast('Saldo insuficiente para este gasto'); return; }
+
+    estado.movimientos.push({
+      id: generarId(), tipo: 'egreso', fecha: fecha, monto: monto,
+      descripcion: desc || 'Gasto', categoria: cat
+    });
+    guardar();
+    renderizar();
+    limpiarGasto();
+    mostrarToast('Gasto registrado ✓');
+    mostrarPanel('historial');
+  }
+
+  function limpiarGasto() {
+    document.getElementById('g-fecha').value = '';
+    document.getElementById('g-monto').value = '';
+    document.getElementById('g-desc').value  = '';
+  }
+
+  // ── RESERVA ──
+  function setModoReserva(modo, boton) {
+    modoReserva = modo;
+    var chips = document.querySelectorAll('.mode-bar .res-chip');
+    for (var i = 0; i < chips.length; i++) { chips[i].classList.remove('activo'); }
+    boton.classList.add('activo');
+    document.getElementById('r-label').textContent =
+      modo === 'mover' ? 'Monto a mover a la reserva' : 'Monto a retirar de la reserva';
+  }
+
+  function moverReserva() {
+    var monto = parseFloat(document.getElementById('r-monto').value);
+    var nota  = document.getElementById('r-nota').value.trim();
+
+    if (!monto || monto <= 0) { mostrarToast('Ingresá un monto válido'); return; }
+
+    if (modoReserva === 'mover') {
+      if (calcularSaldo() < monto) { mostrarToast('Saldo insuficiente'); return; }
+      estado.reserva += monto;
+      estado.movimientos.push({
+        id: generarId(), tipo: 'reserva-entrada', fecha: fechaHoy(), monto: monto,
+        descripcion: nota || 'Movimiento a fondo de emergencia', categoria: 'Reserva'
+      });
+      mostrarToast('Movido al fondo de emergencia ✓');
+    } else {
+      if (estado.reserva < monto) { mostrarToast('La reserva no tiene ese monto'); return; }
+      estado.reserva -= monto;
+      estado.movimientos.push({
+        id: generarId(), tipo: 'reserva-salida', fecha: fechaHoy(), monto: monto,
+        descripcion: nota || 'Retiro del fondo de emergencia', categoria: 'Reserva'
+      });
+      mostrarToast('Retirado del fondo de emergencia ✓');
+    }
+
+    document.getElementById('r-monto').value = '';
+    document.getElementById('r-nota').value  = '';
+    guardar();
+    renderizar();
+  }
+
+  // ── ELIMINAR MOVIMIENTO ──
+  function eliminarMovimiento(id) {
+    var idx = -1;
+    for (var i = 0; i < estado.movimientos.length; i++) {
+      if (estado.movimientos[i].id === id) { idx = i; break; }
+    }
+    if (idx === -1) return;
+    var m = estado.movimientos[idx];
+    // Revertir efecto en reserva si corresponde
+    if (m.tipo === 'reserva-entrada') estado.reserva = Math.max(0, estado.reserva - m.monto);
+    if (m.tipo === 'reserva-salida')  estado.reserva += m.monto;
+    estado.movimientos.splice(idx, 1);
+    guardar();
+    renderizar();
+    mostrarToast('Movimiento eliminado');
+  }
+
+  // ── RESUMEN DEL MES ──
+  function renderizarResumen() {
+    var mes   = obtenerMesActual();
+    var totMes = calcularMes();
+    var saldo  = calcularSaldo();
+
+    // Agrupar gastos por categoría del mes
+    var cats = {};
+    for (var i = 0; i < estado.movimientos.length; i++) {
+      var m = estado.movimientos[i];
+      if (m.tipo !== 'egreso' || !m.fecha || m.fecha.substring(0, 7) !== mes) continue;
+      var c = m.categoria || 'Sin categoría';
+      cats[c] = (cats[c] || 0) + m.monto;
+    }
+    var sorted = Object.entries(cats).sort(function(a, b) { return b[1] - a[1]; });
+
+    var html =
+      '<div class="sum-row"><span class="sum-lbl">Saldo disponible</span><span class="sum-val">' + formato(saldo) + '</span></div>' +
+      '<div class="sum-row"><span class="sum-lbl">Ingresos cobrados (mes)</span><span class="sum-val" style="color:var(--green-dk)">+' + formato(totMes.ing) + '</span></div>' +
+      '<div class="sum-row"><span class="sum-lbl">Gastos (mes)</span><span class="sum-val" style="color:var(--red)">-' + formato(totMes.gas) + '</span></div>' +
+      '<div class="sum-row"><span class="sum-lbl">Fondo de emergencia</span><span class="sum-val" style="color:var(--blue)">' + formato(estado.reserva) + '</span></div>';
+
+    if (sorted.length > 0) {
+      html += '<p style="font-size:12px;color:var(--text3);margin:12px 0 4px">Gastos por categoría este mes</p>';
+      for (var j = 0; j < sorted.length; j++) {
+        html +=
+          '<div class="sum-row">' +
+            '<span class="sum-lbl">' + escaparHTML(sorted[j][0]) + '</span>' +
+            '<span class="sum-val">-' + formato(sorted[j][1]) + '</span>' +
+          '</div>';
+      }
+    }
+
+    document.getElementById('resumen-mes').innerHTML = html;
+  }
+
+  // ── RESUMEN POR MES (pestaña "Meses") ──
+
+  function nombreMes(claveMes) {
+    // claveMes con formato esperado 'YYYY-MM'
+    if (!claveMes || typeof claveMes !== 'string') return 'Fecha inválida';
+    var partes = claveMes.split('-');
+    if (partes.length < 2) return claveMes;
+    var anio = partes[0];
+    var idx  = parseInt(partes[1], 10) - 1;
+    if (isNaN(idx) || idx < 0 || idx > 11 || !NOMBRES_MES[idx]) return claveMes;
+    return NOMBRES_MES[idx] + ' ' + anio;
+  }
+
+  function renderizarMeses() {
+    var cont = document.getElementById('lista-meses');
+
+    // Agrupar movimientos por mes (YYYY-MM)
+    // Solo se consideran fechas con formato válido YYYY-MM-DD (10 caracteres, con guiones en posiciones 4 y 7)
+    var datosMes = {}; // { 'YYYY-MM': { ing: 0, gas: 0, pendiente: 0 } }
+    for (var i = 0; i < estado.movimientos.length; i++) {
+      var m = estado.movimientos[i];
+      if (!m.fecha || typeof m.fecha !== 'string') continue;
+      if (m.fecha.length < 7 || m.fecha.charAt(4) !== '-') continue; // formato inválido
+      var clave = m.fecha.substring(0, 7);
+      if (!datosMes[clave]) datosMes[clave] = { ing: 0, gas: 0, pendiente: 0 };
+
+      if (m.tipo === 'ingreso') {
+        if (m.cobrado) datosMes[clave].ing += m.monto;
+        else datosMes[clave].pendiente += m.monto;
+      }
+      if (m.tipo === 'egreso') {
+        datosMes[clave].gas += m.monto;
+      }
+    }
+
+    var claves = Object.keys(datosMes).sort(function(a, b) {
+      return b.localeCompare(a); // más reciente primero
+    });
+
+    if (claves.length === 0) {
+      cont.innerHTML =
+        '<div class="empty">' +
+          '<i class="ti ti-calendar-off"></i>' +
+          '<p>Todavía no hay datos suficientes.<br>Registrá ingresos o gastos para ver el resumen por mes.</p>' +
+        '</div>';
+      document.getElementById('detalle-mes').innerHTML = '';
+      return;
+    }
+
+    // Si no hay mes seleccionado o el seleccionado ya no existe, usar el más reciente
+    if (!mesSeleccionado || claves.indexOf(mesSeleccionado) === -1) {
+      mesSeleccionado = claves[0];
+    }
+
+    var html = '';
+    for (var j = 0; j < claves.length; j++) {
+      var clave = claves[j];
+      var d = datosMes[clave];
+      var neto = d.ing - d.gas;
+      var activo = (clave === mesSeleccionado) ? ' activo' : '';
+      var pendienteTxt = d.pendiente > 0
+        ? ' · Pendiente: ' + formato(d.pendiente)
+        : '';
+
+      html +=
+        '<div class="month-item' + activo + '" onclick="verDetalleMes(\'' + clave + '\')">' +
+          '<div class="month-icon"><i class="ti ti-calendar"></i></div>' +
+          '<div class="month-info">' +
+            '<div class="month-name">' + nombreMes(clave) + '</div>' +
+            '<div class="month-sub">Ingresos: ' + formato(d.ing) + ' · Gastos: ' + formato(d.gas) + pendienteTxt + '</div>' +
+          '</div>' +
+          '<div class="month-net ' + (neto >= 0 ? 'pos' : 'neg') + '">' + (neto >= 0 ? '+' : '') + formato(neto) + '</div>' +
+        '</div>';
+    }
+    cont.innerHTML = html;
+
+    renderizarDetalleMes(mesSeleccionado, datosMes[mesSeleccionado]);
+  }
+
+  function verDetalleMes(clave) {
+    mesSeleccionado = clave;
+    renderizarMeses();
+  }
+
+  function renderizarDetalleMes(clave, datos) {
+    var det = document.getElementById('detalle-mes');
+
+    // Categorías de gasto del mes seleccionado
+    var cats = {};
+    var movsDelMes = [];
+    for (var i = 0; i < estado.movimientos.length; i++) {
+      var m = estado.movimientos[i];
+      if (!m.fecha || m.fecha.substring(0, 7) !== clave) continue;
+      movsDelMes.push(m);
+      if (m.tipo === 'egreso') {
+        var c = m.categoria || 'Sin categoría';
+        cats[c] = (cats[c] || 0) + m.monto;
+      }
+    }
+    var sortedCats = Object.entries(cats).sort(function(a, b) { return b[1] - a[1]; });
+
+    var neto = datos.ing - datos.gas;
+
+    var html =
+      '<hr class="divider">' +
+      '<div class="month-detail-title"><i class="ti ti-calendar-event"></i> Detalle de ' + nombreMes(clave) + '</div>' +
+      '<div class="sum-row"><span class="sum-lbl">Ingresos cobrados</span><span class="sum-val" style="color:var(--green-dk)">+' + formato(datos.ing) + '</span></div>' +
+      '<div class="sum-row"><span class="sum-lbl">Gastos</span><span class="sum-val" style="color:var(--red)">-' + formato(datos.gas) + '</span></div>';
+
+    if (datos.pendiente > 0) {
+      html += '<div class="sum-row"><span class="sum-lbl">Ingresos pendientes de cobro</span><span class="sum-val" style="color:var(--amber)">' + formato(datos.pendiente) + '</span></div>';
+    }
+
+    html += '<div class="sum-row"><span class="sum-lbl">Resultado del mes</span><span class="sum-val" style="color:' + (neto >= 0 ? 'var(--green-dk)' : 'var(--red)') + '">' + (neto >= 0 ? '+' : '') + formato(neto) + '</span></div>';
+
+    if (sortedCats.length > 0) {
+      html += '<p style="font-size:12px;color:var(--text3);margin:12px 0 4px">Gastos por categoría</p>';
+      for (var j = 0; j < sortedCats.length; j++) {
+        html +=
+          '<div class="sum-row">' +
+            '<span class="sum-lbl">' + escaparHTML(sortedCats[j][0]) + '</span>' +
+            '<span class="sum-val">-' + formato(sortedCats[j][1]) + '</span>' +
+          '</div>';
+      }
+    }
+
+    det.innerHTML = html;
+  }
+
+  // ── NAVEGACIÓN DE PESTAÑAS ──
+  var PANELES = ['historial', 'ingreso', 'gasto', 'reserva', 'meses'];
+
+  function mostrarPanel(nombre) {
+    // Ocultar todos los paneles
+    for (var i = 0; i < PANELES.length; i++) {
+      var pan = document.getElementById('panel-' + PANELES[i]);
+      var btn = document.getElementById('ntab-' + PANELES[i]);
+      if (pan) { pan.classList.remove('activo'); }
+      if (btn) { btn.classList.remove('activo'); btn.setAttribute('aria-selected', 'false'); }
+    }
+    // Mostrar el panel solicitado
+    var panelObj = document.getElementById('panel-' + nombre);
+    var tabBtn   = document.getElementById('ntab-' + nombre);
+    if (panelObj) { panelObj.classList.add('activo'); }
+    if (tabBtn)   { tabBtn.classList.add('activo'); tabBtn.setAttribute('aria-selected', 'true'); }
+  }
+
+  // ── MODAL SALDO INICIAL ──
+  function abrirModal() {
+    document.getElementById('modal-saldo').value = estado.saldoInicial;
+    document.getElementById('overlay-saldo').classList.add('abierto');
+    document.getElementById('modal-saldo').focus();
+  }
+
+  function cerrarModal() {
+    document.getElementById('overlay-saldo').classList.remove('abierto');
+  }
+
+  function guardarSaldo() {
+    var v = parseFloat(document.getElementById('modal-saldo').value);
+    if (isNaN(v) || v < 0) { mostrarToast('Ingresá un saldo válido'); return; }
+    estado.saldoInicial = v;
+    guardar();
+    renderizar();
+    cerrarModal();
+    mostrarToast('Saldo inicial actualizado ✓');
+  }
+
+  document.getElementById('modal-saldo').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') guardarSaldo();
+  });
+
+  // ── EXPORTAR CSV ──
+  function exportarCSV() {
+    if (estado.movimientos.length === 0) { mostrarToast('No hay movimientos para exportar'); return; }
+
+    var cols = 'Fecha,Tipo,Descripcion,Categoria,Monto,Cobrado\n';
+    var rows = estado.movimientos.map(function(m) {
+      return [
+        m.fecha || '',
+        m.tipo,
+        '"' + (m.descripcion || '').replace(/"/g, '""') + '"',
+        m.categoria || '',
+        m.monto,
+        m.tipo === 'ingreso' ? (m.cobrado ? 'Si' : 'No') : '-'
+      ].join(',');
+    }).join('\n');
+
+    var csv  = '\uFEFF' + cols + rows;
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'mis-finanzas-' + fechaHoy() + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    mostrarToast('CSV exportado ✓');
+  }
+
+  // ── IMPORTAR CSV ──
+  // Tipos válidos reconocidos en la columna "Tipo"
+  var TIPOS_VALIDOS = ['ingreso', 'egreso', 'reserva-entrada', 'reserva-salida'];
+
+  // Parsea una línea CSV respetando comillas (para campos con comas internas)
+  function parsearLineaCSV(linea) {
+    var campos = [];
+    var actual = '';
+    var dentroComillas = false;
+
+    for (var i = 0; i < linea.length; i++) {
+      var ch = linea[i];
+      if (ch === '"') {
+        if (dentroComillas && linea[i + 1] === '"') {
+          actual += '"';
+          i++; // saltar la comilla escapada
+        } else {
+          dentroComillas = !dentroComillas;
+        }
+      } else if (ch === ',' && !dentroComillas) {
+        campos.push(actual);
+        actual = '';
+      } else {
+        actual += ch;
+      }
+    }
+    campos.push(actual);
+    return campos;
+  }
+
+  function importarCSV(evento) {
+    var archivo = evento.target.files[0];
+    if (!archivo) return;
+
+    var lector = new FileReader();
+    lector.onload = function(e) {
+      try {
+        var texto = e.target.result;
+        // Quitar BOM si existe y normalizar saltos de línea
+        texto = texto.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        var lineas = texto.split('\n').filter(function(l) { return l.trim() !== ''; });
+
+        if (lineas.length < 2) {
+          mostrarToast('El archivo CSV no tiene datos para importar');
+          return;
+        }
+
+        // La primera línea es el encabezado; se ignora su contenido exacto
+        // y se asume el orden: Fecha,Tipo,Descripcion,Categoria,Monto,Cobrado
+        var agregados = 0;
+        var omitidos  = 0;
+
+        for (var i = 1; i < lineas.length; i++) {
+          var campos = parsearLineaCSV(lineas[i]);
+          if (campos.length < 5) { omitidos++; continue; }
+
+          var fecha = campos[0].trim();
+          var tipo  = campos[1].trim().toLowerCase();
+          var desc  = campos[2].trim();
+          var cat   = campos[3].trim();
+          var monto = parseFloat(campos[4]);
+          var cobradoTxt = campos.length > 5 ? campos[5].trim().toLowerCase() : '';
+
+          // Validaciones básicas
+          if (TIPOS_VALIDOS.indexOf(tipo) === -1) { omitidos++; continue; }
+          if (isNaN(monto) || monto <= 0) { omitidos++; continue; }
+          if (!fecha) fecha = fechaHoy();
+
+          var nuevoMov = {
+            id: generarId(),
+            tipo: tipo,
+            fecha: fecha,
+            monto: monto,
+            descripcion: desc || 'Importado',
+            categoria: cat || 'Otro'
+          };
+
+          if (tipo === 'ingreso') {
+            nuevoMov.cobrado = (cobradoTxt === 'si' || cobradoTxt === 'sí' || cobradoTxt === 'yes' || cobradoTxt === 'true');
+          }
+
+          // Ajustar el fondo de reserva si corresponde
+          if (tipo === 'reserva-entrada') estado.reserva += monto;
+          if (tipo === 'reserva-salida')  estado.reserva = Math.max(0, estado.reserva - monto);
+
+          estado.movimientos.push(nuevoMov);
+          agregados++;
+        }
+
+        // Reordenar todos los movimientos por fecha para mantener el historial cronológico
+        estado.movimientos.sort(function(a, b) {
+          var fa = a.fecha || '';
+          var fb = b.fecha || '';
+          if (fa < fb) return -1;
+          if (fa > fb) return 1;
+          return 0;
+        });
+
+        guardar();
+        renderizar();
+
+        if (agregados > 0) {
+          var msg = agregados + ' movimiento' + (agregados === 1 ? '' : 's') + ' importado' + (agregados === 1 ? '' : 's') + ' ✓';
+          if (omitidos > 0) msg += ' (' + omitidos + ' omitido' + (omitidos === 1 ? '' : 's') + ')';
+          mostrarToast(msg);
+        } else {
+          mostrarToast('No se importó ningún movimiento válido');
+        }
+      } catch (err) {
+        mostrarToast('Error al leer el archivo CSV');
+      } finally {
+        // Permitir volver a importar el mismo archivo si se desea
+        evento.target.value = '';
+      }
+    };
+    lector.onerror = function() {
+      mostrarToast('No se pudo leer el archivo');
+      evento.target.value = '';
+    };
+    lector.readAsText(archivo, 'UTF-8');
+  }
+
+  // ── TOAST ──
+  var toastTimer;
+  function mostrarToast(msg) {
+    var el = document.getElementById('toast-msg');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2800);
+  }
+</script>
+</body>
+</html>
