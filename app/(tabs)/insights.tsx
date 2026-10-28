@@ -452,7 +452,7 @@ export default function InsightsScreen() {
           agrega los movimientos válidos sin reemplazar los que ya guardaste.
         </Text>
       </Card>
-      {transactions.length ? (
+      {transactions.length || budgets.length ? (
         <Card style={{ borderColor: C.border }}>
           <Text style={{ color: C.text, fontSize: 14, fontWeight: "700" }}>
             Administrar tus datos locales
@@ -466,7 +466,8 @@ export default function InsightsScreen() {
               marginBottom: 12,
             }}
           >
-            {transactions.length} movimientos guardados en este dispositivo.
+            {transactions.length} movimientos y {budgets.length} presupuestos
+            guardados en este dispositivo.
           </Text>
           <Pressable
             onPress={clearData}
