@@ -17,7 +17,7 @@ export async function loadLocalData(): Promise<AppData | null> {
     const value = JSON.parse(raw) as AppData;
     if (!Array.isArray(value.transactions) || !Array.isArray(value.budgets))
       return null;
-    return { ...value, isDemo: Boolean(value.isDemo) };
+    return value;
   } catch {
     return null;
   }

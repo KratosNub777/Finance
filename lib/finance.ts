@@ -19,7 +19,6 @@ export type Budget = {
 export type AppData = {
   transactions: Transaction[];
   budgets: Budget[];
-  isDemo: boolean;
 };
 
 export type TrendMonth = {
@@ -257,92 +256,6 @@ export function readableInsights(
     });
   }
   return messages.slice(0, 4);
-}
-
-const demoExpenses = [1737, 330, 210.72, 105.36, 92.19, 35, 54, 46.66, 23];
-const monthlyTotals = [2946.48, 2844.48, 2809.48, 2877.48, 3016.48, 2633.93];
-const monthlyIncome = [5080, 5760, 5140, 6000, 5220, 5250];
-const demoBudgets = [2200, 250, 400, 300, 350, 180, 250, 200, 90];
-const demoNotes = [
-  "Renta",
-  "Lilia · cena",
-  "Whole Foods Market",
-  "Recibo de luz",
-  "Uber",
-  "CityMD · copago",
-  "Alamo Drafthouse",
-  "Compra del mes",
-  "Varios",
-];
-
-export function createDemoData(now = new Date()): AppData {
-  const latestMonth = currentMonthKey(now);
-  const transactions: Transaction[] = [];
-  const budgets: Budget[] = [];
-  for (let monthIndex = 0; monthIndex < 6; monthIndex += 1) {
-    const month = shiftMonth(latestMonth, monthIndex - 5);
-    const [year, monthNumber] = month.split("-").map(Number);
-    const anchor = monthIndex === 5;
-    const expenseTotal = monthlyTotals[monthIndex];
-    const categoryAmounts = anchor
-      ? demoExpenses
-      : demoExpenses.map((amount, categoryIndex) => {
-          const scaled = (expenseTotal * amount) / monthlyTotals[5];
-          return categoryIndex === demoExpenses.length - 1
-            ? Number(
-                (
-                  expenseTotal -
-                  demoExpenses
-                    .slice(0, -1)
-                    .reduce(
-                      (sum, prior) =>
-                        sum + (expenseTotal * prior) / monthlyTotals[5],
-                      0,
-                    )
-                ).toFixed(2),
-              )
-            : Number(scaled.toFixed(2));
-        });
-    const day = "05";
-    transactions.push({
-      id: `sample-income-${month}`,
-      kind: "income",
-      amount: monthlyIncome[monthIndex],
-      category: "Salario",
-      date: `${year}-${String(monthNumber).padStart(2, "0")}-${day}`,
-      note: "Ingreso mensual de ejemplo",
-    });
-    expenseCategories.forEach((category, categoryIndex) => {
-      const lateSeptemberAmount =
-        monthIndex === 4 && categoryIndex === 0 ? 204.48 : 0;
-      transactions.push({
-        id: `sample-expense-${month}-${categoryIndex}`,
-        kind: "expense",
-        amount: Number(
-          (categoryAmounts[categoryIndex] - lateSeptemberAmount).toFixed(2),
-        ),
-        category,
-        date: `${year}-${String(monthNumber).padStart(2, "0")}-${day}`,
-        note: demoNotes[categoryIndex],
-      });
-      if (lateSeptemberAmount)
-        transactions.push({
-          id: `sample-expense-${month}-late-${categoryIndex}`,
-          kind: "expense",
-          amount: lateSeptemberAmount,
-          category,
-          date: `${year}-${String(monthNumber).padStart(2, "0")}-25`,
-          note: "Renta · segunda parte",
-        });
-      budgets.push({
-        id: `sample-budget-${month}-${categoryIndex}`,
-        month,
-        category,
-        amount: demoBudgets[categoryIndex],
-      });
-    });
-  }
-  return { transactions, budgets, isDemo: true };
 }
 
 export function makeId() {

@@ -100,7 +100,6 @@ export default function OverviewScreen() {
     month,
     setMonth,
     ready,
-    isDemo,
     storageError,
     retryPersistence,
     addTransaction,
@@ -226,31 +225,6 @@ export default function OverviewScreen() {
             <ActionButton title="Agregar" icon="add" onPress={add} small />
           }
         />
-        {isDemo ? (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 7,
-              paddingHorizontal: 11,
-              paddingVertical: 9,
-              borderRadius: 12,
-              backgroundColor: "#17283A",
-              borderColor: C.border,
-              borderWidth: 1,
-            }}
-          >
-            <Ionicons
-              name="information-circle-outline"
-              color={C.blue}
-              size={16}
-            />
-            <Text style={{ color: C.muted, fontSize: 11, flex: 1 }}>
-              Incluye datos de ejemplo. Puedes borrarlos desde Análisis → Datos
-              y privacidad.
-            </Text>
-          </View>
-        ) : null}
 
         {storageError ? (
           <View
@@ -332,7 +306,7 @@ export default function OverviewScreen() {
               marginTop: 8,
             }}
           >
-            {formatMoney(income - expense, 2)}
+            {formatMoney(income - expense)}
           </Text>
           <View
             style={{

@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import {
-  createDemoData,
   currentMonthKey,
   makeId,
   monthKeyForDate,
@@ -26,7 +25,6 @@ type FinanceContextValue = {
   month: string;
   setMonth: (month: string) => void;
   ready: boolean;
-  isDemo: boolean;
   storageError: string | null;
   retryPersistence: () => void;
   addTransaction: (draft: TransactionDraft) => void;
@@ -43,7 +41,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [month, setMonth] = useState(currentMonthKey());
-  const [isDemo, setIsDemo] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -51,14 +48,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     let active = true;
     loadLocalData().then((saved) => {
       if (!active) return;
-      const initial: AppData = saved ?? createDemoData();
-      setTransactions(initial.transactions);
-      setBudgets(initial.budgets);
-      setIsDemo(
-        initial.isDemo ||
-          initial.transactions.some((item) => item.id.startsWith("sample-")),
-      );
-      if (!saved) setMonth(currentMonthKey());
+      setTransactions(saved?.transactions ?? []);
+      setBudgets(saved?.budgets ?? []);
       setReady(true);
     });
     return () => {
@@ -67,13 +58,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const storageSnapshot = useMemo<AppData>(
-    () => ({
-      transactions,
-      budgets,
-      isDemo:
-        isDemo && transactions.some((item) => item.id.startsWith("sample-")),
-    }),
-    [transactions, budgets, isDemo],
+    () => ({ transactions, budgets }),
+    [transactions, budgets],
   );
 
   useEffect(() => {
@@ -140,7 +126,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const clearAll = useCallback(() => {
     setTransactions([]);
     setBudgets([]);
-    setIsDemo(false);
     setMonth(currentMonthKey());
   }, []);
 
@@ -151,8 +136,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       month,
       setMonth,
       ready,
-      isDemo:
-        isDemo && transactions.some((item) => item.id.startsWith("sample-")),
       storageError,
       retryPersistence,
       addTransaction,
@@ -167,7 +150,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       budgets,
       month,
       ready,
-      isDemo,
       storageError,
       retryPersistence,
       addTransaction,

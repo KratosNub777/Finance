@@ -35,7 +35,6 @@ export default function InsightsScreen() {
     budgets,
     month,
     ready,
-    isDemo,
     storageError,
     retryPersistence,
     importTransactions,
@@ -161,7 +160,7 @@ export default function InsightsScreen() {
       setBusy(false);
     }
   };
-  const clearDemo = () => {
+  const clearData = () => {
     if (Platform.OS === "web") {
       if (
         typeof window !== "undefined" &&
@@ -453,12 +452,10 @@ export default function InsightsScreen() {
           agrega los movimientos válidos sin reemplazar los que ya guardaste.
         </Text>
       </Card>
-      {isDemo || transactions.length ? (
+      {transactions.length ? (
         <Card style={{ borderColor: C.border }}>
           <Text style={{ color: C.text, fontSize: 14, fontWeight: "700" }}>
-            {isDemo
-              ? "¿Quieres empezar con tus propios datos?"
-              : "Administrar tus datos locales"}
+            Administrar tus datos locales
           </Text>
           <Text
             style={{
@@ -469,12 +466,10 @@ export default function InsightsScreen() {
               marginBottom: 12,
             }}
           >
-            {isDemo
-              ? "La app incluye movimientos ficticios para mostrarte cómo funciona el panel. Puedes borrar todos los movimientos y presupuestos, y luego importar tu CSV."
-              : `${transactions.length} movimientos guardados en este dispositivo.`}
+            {transactions.length} movimientos guardados en este dispositivo.
           </Text>
           <Pressable
-            onPress={clearDemo}
+            onPress={clearData}
             style={({ pressed }) => ({
               alignSelf: "flex-start",
               flexDirection: "row",
