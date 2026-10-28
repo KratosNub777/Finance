@@ -65,3 +65,6 @@ Thumbs.db
 
 # Webdev artifacts (checkpoint zips, migrations, etc.)
 .webdev/
+
+# Respaldos locales del proyecto
+*.zip

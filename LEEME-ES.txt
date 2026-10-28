@@ -19,3 +19,5 @@ Para probar el contenido estático localmente:
 Luego abre http://localhost:8000.
 
 Para usarlo solo en computadora, basta con la web. Los movimientos y presupuestos se guardan en el almacenamiento local del navegador. No se sincronizan con otros navegadores/dispositivos. Para moverlos, utiliza las funciones CSV de Pocketwise.
+
+Moneda: cambia CURRENCY y MONEY_LOCALE al inicio de lib/finance.ts.
