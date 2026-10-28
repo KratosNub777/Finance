@@ -23,8 +23,10 @@ import {
   IconBadge,
   LoadingState,
   MonthBar,
+  SIDEBAR_WIDTH,
   Screen,
   SectionTitle,
+  useDesktop,
 } from "@/components/ui";
 import { DonutChart, TrendChart } from "@/components/charts";
 import { TransactionRow } from "@/components/TransactionRow";
@@ -135,7 +137,8 @@ export default function OverviewScreen() {
         .slice(0, 5),
     [transactions, month],
   );
-  const wide = width > 760;
+  const desktop = useDesktop();
+  const wide = width - (desktop ? SIDEBAR_WIDTH : 0) > 760;
   const cardWidth = wide ? ("48%" as const) : ("100%" as const);
   const saveTransaction = (draft: TransactionDraft) =>
     editing ? updateTransaction(editing.id, draft) : addTransaction(draft);

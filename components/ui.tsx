@@ -5,6 +5,7 @@ import {
   ScrollView,
   Text,
   View,
+  useWindowDimensions,
   type ViewStyle,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -26,6 +27,15 @@ export const C = {
   blue: "#7CC8EF",
 };
 
+// Desde este ancho la navegación pasa a una barra lateral y el contenido se centra con ancho máximo.
+export const DESKTOP_MIN = 900;
+export const SIDEBAR_WIDTH = 220;
+export const CONTENT_MAX = 1100;
+
+export function useDesktop() {
+  return useWindowDimensions().width >= DESKTOP_MIN;
+}
+
 export function Screen({
   children,
   scroll = true,
@@ -35,6 +45,7 @@ export function Screen({
   scroll?: boolean;
   contentStyle?: ViewStyle;
 }) {
+  const desktop = useDesktop();
   if (!scroll)
     return (
       <SafeAreaView
@@ -51,14 +62,27 @@ export function Screen({
     >
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={[
-          { paddingHorizontal: 18, paddingTop: 12, paddingBottom: 30, gap: 16 },
-          contentStyle,
-        ]}
+        contentContainerStyle={{
+          paddingHorizontal: desktop ? 32 : 18,
+          paddingTop: desktop ? 28 : 12,
+          paddingBottom: desktop ? 48 : 30,
+        }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {children}
+        <View
+          style={[
+            {
+              width: "100%",
+              maxWidth: CONTENT_MAX,
+              alignSelf: "center",
+              gap: desktop ? 20 : 16,
+            },
+            contentStyle,
+          ]}
+        >
+          {children}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
