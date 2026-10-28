@@ -17,19 +17,26 @@ describe("Pocketwise finance helpers", () => {
   });
 
   it("creates a disclosed example with the 32% dining insight and reference totals", () => {
-    const sample = createDemoData(new Date(2026, 9, 23));
+    const now = new Date(2026, 9, 23);
+    const sample = createDemoData(now);
     const month = "2026-10";
+    const insights = readableInsights(
+      sample.transactions,
+      sample.budgets,
+      month,
+      now,
+    );
     const totals = totalsForMonth(sample.transactions, month);
     expect(totals.income).toBe(5250);
     expect(totals.expense).toBeCloseTo(2633.93, 2);
     expect(totalBudgetForMonth(sample.budgets, month)).toBe(4220);
     expect(sample.isDemo).toBe(true);
-    expect(
-      readableInsights(sample.transactions, sample.budgets, month)[0].title,
-    ).toBe("Comer fuera está un 32 % por encima del presupuesto");
-    expect(
-      readableInsights(sample.transactions, sample.budgets, month)[1].title,
-    ).toBe("Tu gasto va un 6 % por debajo del mes pasado");
+    expect(insights[0].title).toBe(
+      "Comer fuera está un 32 % por encima del presupuesto",
+    );
+    expect(insights[1].title).toBe(
+      "Tu gasto va un 6 % por debajo del mes pasado",
+    );
   });
 
   it("round-trips CSV including commas, quotes, and accented category names", () => {

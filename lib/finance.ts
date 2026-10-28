@@ -102,10 +102,14 @@ export function formatMonth(month: string, short = false) {
   });
 }
 
+// Cambia estos dos valores para usar otra moneda (código ISO 4217) y formato numérico (p. ej. "ARS" con "es-AR").
+export const CURRENCY = "USD";
+export const MONEY_LOCALE = "en-US";
+
 export function formatMoney(amount: number, decimals = 0) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(MONEY_LOCALE, {
     style: "currency",
-    currency: "USD",
+    currency: CURRENCY,
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(Number.isFinite(amount) ? amount : 0);
@@ -181,6 +185,7 @@ export function readableInsights(
   transactions: Transaction[],
   budgets: Budget[],
   month: string,
+  now = new Date(),
 ) {
   const messages: {
     title: string;
@@ -206,8 +211,8 @@ export function readableInsights(
 
   const [year, monthIndex] = month.split("-").map(Number);
   const cutoff =
-    month === currentMonthKey()
-      ? new Date().getDate()
+    month === currentMonthKey(now)
+      ? now.getDate()
       : new Date(year, monthIndex, 0).getDate();
   const previous = shiftMonth(month, -1);
   const throughDay = (monthKey: string) =>
