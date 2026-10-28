@@ -1,0 +1,9 @@
+# Pocketwise — entregables
+
+- [x] **Registrar y administrar movimientos.** La app debe permitir registrar ingresos y gastos con categorías; los movimientos incluyen fecha, importe, categoría y nota opcional. El usuario podrá consultar el historial mensual, añadir movimientos, editarlos y eliminarlos.
+- [x] **Presupuestos mensuales por categoría.** La app debe permitir fijar y actualizar un presupuesto mensual por cada categoría de gasto y mostrar cuánto se gastó y cuánto queda por categoría para el mes seleccionado.
+- [x] **Panel de presupuesto.** La app debe mostrar un panel resumen con ingresos, gastos, saldo y distribución del gasto por categoría, junto con movimientos recientes y la proporción gastada frente al presupuesto total.
+- [x] **Tendencia e insights.** La app debe presentar un gráfico de tendencia mes a mes que compare ingresos y gastos, y generar análisis automáticos en lenguaje sencillo basados en movimientos y presupuestos, por ejemplo: “Comer fuera está un 32 % por encima del presupuesto”.
+- [x] **Navegación de periodos e historial.** La app debe permitir navegar entre meses y consultar el historial de movimientos y presupuestos correspondiente a cada mes.
+- [x] **Importación, exportación y privacidad local.** La app debe admitir la importación de movimientos desde archivos CSV y la exportación de datos a CSV. Debe guardar todos los datos de forma persistente en el navegador/dispositivo para que funcione sin cuenta ni backend. No enviará movimientos ni presupuestos a un servidor; avisará si no puede guardar localmente y permitirá reintentar.
+- [x] **Identidad visual móvil.** Aplicar la guía visual inspirada en https://pocketwise-mc24epbp.manus.space: dashboard financiero de fondo azul noche, superficies contrastadas, acento menta, tarjetas con saldo y presupuesto, gráficos de flujo de caja/gasto por categoría, avisos sencillos y navegación adaptada a retrato. Crear iconos coordinados para la app nativa.

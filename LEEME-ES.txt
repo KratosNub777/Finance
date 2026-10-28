@@ -1,0 +1,21 @@
+POCKETWISE — PROYECTO FUENTE
+
+Este archivo contiene el código fuente de Pocketwise. No contiene node_modules, credenciales ni datos personales.
+
+Requisitos: Node.js 20 o posterior y pnpm 9.12.0 (puedes activar pnpm con: corepack prepare pnpm@9.12.0 --activate).
+
+Para levantar la aplicación completa en modo desarrollo:
+  1. Abre una terminal dentro de esta carpeta.
+  2. Ejecuta: pnpm install --frozen-lockfile
+  3. Ejecuta: pnpm dev
+  4. Abre http://localhost:8081 en el navegador.
+
+Para generar un sitio web estático:
+  pnpm exec expo export --platform web
+La carpeta generada es dist/.
+
+Para probar el contenido estático localmente:
+  python3 -m http.server 8000 --directory dist
+Luego abre http://localhost:8000.
+
+Para usarlo solo en computadora, basta con la web. Los movimientos y presupuestos se guardan en el almacenamiento local del navegador. No se sincronizan con otros navegadores/dispositivos. Para moverlos, utiliza las funciones CSV de Pocketwise.
