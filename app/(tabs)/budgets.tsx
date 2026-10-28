@@ -19,6 +19,7 @@ import {
   LoadingState,
   MonthBar,
   Screen,
+  useDesktop,
 } from "@/components/ui";
 import { BudgetProgress } from "@/components/charts";
 import { BudgetEditorModal } from "@/components/BudgetEditorModal";
@@ -37,6 +38,7 @@ const icons: Record<string, keyof typeof Ionicons.glyphMap> = {
 
 export default function BudgetsScreen() {
   const { transactions, budgets, month, ready, setBudget } = useFinance();
+  const desktop = useDesktop();
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState<string | undefined>();
   const currentBudgets = budgets.filter((item) => item.month === month);
@@ -135,7 +137,12 @@ export default function BudgetsScreen() {
             {currentBudgets.length} con plan
           </Text>
         </View>
-        <View style={{ gap: 9 }}>
+        <View
+          style={{
+            gap: 9,
+            ...(desktop ? { flexDirection: "row", flexWrap: "wrap" } : {}),
+          }}
+        >
           {expenseCategories.map((name) => {
             const budget =
               currentBudgets.find((item) => item.category === name)?.amount ??
@@ -144,7 +151,11 @@ export default function BudgetsScreen() {
             const remaining = budget - actual;
             const color = categoryColors[name] ?? C.mint;
             return (
-              <Card key={name} padding={14}>
+              <Card
+                key={name}
+                padding={14}
+                style={desktop ? { width: "49.5%" } : undefined}
+              >
                 <View
                   style={{
                     flexDirection: "row",
