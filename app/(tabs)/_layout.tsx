@@ -3,10 +3,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticTab } from "@/components/haptic-tab";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform } from "react-native";
-import { C } from "@/components/ui";
+import { C, SIDEBAR_WIDTH, useDesktop } from "@/components/ui";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const desktop = useDesktop();
   const bottomPadding = Platform.OS === "web" ? 10 : Math.max(insets.bottom, 8);
   return (
     <Tabs
@@ -15,17 +16,48 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarActiveTintColor: C.mint,
         tabBarInactiveTintColor: C.faint,
-        tabBarLabelStyle: { fontSize: 10, fontWeight: "600", marginTop: 1 },
-        tabBarItemStyle: { paddingTop: 6 },
-        tabBarStyle: {
-          height: 58 + bottomPadding,
-          paddingBottom: bottomPadding,
-          paddingTop: 3,
-          backgroundColor: C.bg,
-          borderTopColor: C.border,
-          borderTopWidth: 1,
-          elevation: 0,
-        },
+        ...(desktop
+          ? {
+              // Barra lateral izquierda para pantallas anchas.
+              tabBarPosition: "left" as const,
+              tabBarLabelPosition: "beside-icon" as const,
+              tabBarActiveBackgroundColor: "#6FE7C214",
+              tabBarLabelStyle: { fontSize: 14, fontWeight: "600" },
+              tabBarItemStyle: {
+                height: 44,
+                borderRadius: 12,
+                paddingHorizontal: 14,
+                marginBottom: 4,
+                justifyContent: "flex-start" as const,
+              },
+              tabBarStyle: {
+                width: SIDEBAR_WIDTH,
+                minWidth: SIDEBAR_WIDTH,
+                paddingTop: 24,
+                paddingHorizontal: 12,
+                backgroundColor: C.bg,
+                borderRightColor: C.border,
+                borderRightWidth: 1,
+                elevation: 0,
+              },
+            }
+          : {
+              tabBarLabelStyle: {
+                fontSize: 10,
+                fontWeight: "600",
+                marginTop: 1,
+              },
+              tabBarItemStyle: { paddingTop: 6 },
+              tabBarStyle: {
+                height: 58 + bottomPadding,
+                paddingBottom: bottomPadding,
+                paddingTop: 3,
+                backgroundColor: C.bg,
+                borderTopColor: C.border,
+                borderTopWidth: 1,
+                elevation: 0,
+              },
+            }),
       }}
     >
       <Tabs.Screen
