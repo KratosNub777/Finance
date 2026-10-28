@@ -1,4 +1,9 @@
-import { isValidISODate, makeId, type Transaction } from "./finance";
+import {
+  isValidISODate,
+  makeId,
+  parseAmount,
+  type Transaction,
+} from "./finance";
 
 const HEADERS = ["fecha", "tipo", "importe", "categoria", "nota"];
 
@@ -13,7 +18,7 @@ export function transactionsToCSV(transactions: Transaction[]) {
       [
         transaction.date,
         transaction.kind === "income" ? "ingreso" : "gasto",
-        transaction.amount.toFixed(2),
+        String(transaction.amount),
         transaction.category,
         transaction.note ?? "",
       ]
@@ -59,19 +64,6 @@ function normalizedHeader(value: string) {
     .toLocaleLowerCase("es-MX")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
-}
-
-function parseAmount(value: string) {
-  let clean = value.trim().replace(/[$\s]/g, "");
-  if (clean.includes(",") && clean.includes(".")) {
-    clean =
-      clean.lastIndexOf(",") > clean.lastIndexOf(".")
-        ? clean.replace(/\./g, "").replace(",", ".")
-        : clean.replace(/,/g, "");
-  } else if (clean.includes(",")) {
-    clean = clean.replace(",", ".");
-  }
-  return Number(clean);
 }
 
 export function parseTransactionsCSV(source: string) {
@@ -124,7 +116,7 @@ export function parseTransactionsCSV(source: string) {
     transactions.push({
       id: makeId(),
       kind,
-      amount: Math.round(amount * 100) / 100,
+      amount,
       category,
       date,
       note:

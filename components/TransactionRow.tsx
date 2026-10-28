@@ -67,7 +67,7 @@ export function TransactionRow({
         }}
       >
         {income ? "+" : "−"}
-        {formatMoney(transaction.amount, 2)}
+        {formatMoney(transaction.amount)}
       </Text>
       {onDelete ? (
         <Pressable

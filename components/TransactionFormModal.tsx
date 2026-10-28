@@ -15,6 +15,7 @@ import {
   expenseCategories,
   incomeCategories,
   isValidISODate,
+  parseAmount,
 } from "@/lib/finance";
 import { C, ActionButton } from "@/components/ui";
 import type { TransactionDraft } from "@/lib/AppContext";
@@ -54,7 +55,7 @@ export function TransactionFormModal({
 
   const categories = kind === "expense" ? expenseCategories : incomeCategories;
   const save = () => {
-    const parsed = Number(amount.replace(",", "."));
+    const parsed = parseAmount(amount);
     if (!Number.isFinite(parsed) || parsed <= 0) {
       setError("Escribe un importe mayor que cero.");
       return;
@@ -229,9 +230,9 @@ export function TransactionFormModal({
               <TextInput
                 value={amount}
                 onChangeText={setAmount}
-                placeholder="0.00"
+                placeholder="0"
                 placeholderTextColor={C.faint}
-                keyboardType="decimal-pad"
+                keyboardType="number-pad"
                 style={[
                   inputStyle,
                   { fontSize: 23, fontWeight: "700", height: 58 },

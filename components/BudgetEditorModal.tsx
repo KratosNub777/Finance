@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { expenseCategories } from "@/lib/finance";
+import { expenseCategories, parseAmount } from "@/lib/finance";
 import { C, ActionButton } from "@/components/ui";
 
 export function BudgetEditorModal({
@@ -36,12 +36,12 @@ export function BudgetEditorModal({
     setError("");
   }, [visible, initialCategory, initialAmount]);
   const save = () => {
-    const value = Number(amount.replace(",", "."));
+    const value = parseAmount(amount);
     if (!Number.isFinite(value) || value <= 0) {
       setError("El presupuesto debe ser mayor que cero.");
       return;
     }
-    onSave(category, Math.round(value * 100) / 100);
+    onSave(category, value);
     onClose();
   };
   return (
@@ -156,9 +156,9 @@ export function BudgetEditorModal({
             <TextInput
               value={amount}
               onChangeText={setAmount}
-              placeholder="0.00"
+              placeholder="0"
               placeholderTextColor={C.faint}
-              keyboardType="decimal-pad"
+              keyboardType="number-pad"
               style={{
                 height: 52,
                 borderRadius: 13,

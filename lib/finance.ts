@@ -101,17 +101,31 @@ export function formatMonth(month: string, short = false) {
   });
 }
 
-// Cambia estos dos valores para usar otra moneda (código ISO 4217) y formato numérico (p. ej. "ARS" con "es-AR").
-export const CURRENCY = "USD";
-export const MONEY_LOCALE = "en-US";
+// Cambia estos dos valores para usar otra moneda (código ISO 4217) y formato numérico.
+// Los importes se manejan sin decimales: sirve para guaraníes (PYG); para monedas con centavos habría que reintroducirlos.
+export const CURRENCY = "PYG";
+export const MONEY_LOCALE = "es-PY";
 
-export function formatMoney(amount: number, decimals = 0) {
+export function formatMoney(amount: number) {
   return new Intl.NumberFormat(MONEY_LOCALE, {
     style: "currency",
     currency: CURRENCY,
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
+    maximumFractionDigits: 0,
   }).format(Number.isFinite(amount) ? amount : 0);
+}
+
+// Acepta "150000", "150.000" o "Gs. 150.000": sin decimales, los puntos y comas son separadores de miles.
+// shortcut: un final ",50" o ".5" (1-2 dígitos) se toma como decimal y se redondea, así que "1.5" son 2 Gs.; subir si hay monedas con centavos.
+export function parseAmount(value: string) {
+  const clean = value.replace(/[^\d.,]/g, "");
+  const decimal = /^(.*?)[.,](\d{1,2})$/.exec(clean);
+  return Math.round(
+    Number(
+      decimal
+        ? `${decimal[1].replace(/[.,]/g, "")}.${decimal[2]}`
+        : clean.replace(/[.,]/g, ""),
+    ),
+  );
 }
 
 export function formatDate(date: string, includeYear = false) {
