@@ -6,7 +6,7 @@ App de presupuesto personal en español, inspirada en la experiencia Pocketwise 
 
 La app se desarrolla sobre el starter administrado Expo Router / React Native / TypeScript / NativeWind ya inicializado. Se usará AsyncStorage en Android/iOS y `localStorage` en Expo Web, sin cuentas, sin lecturas/escrituras de finanzas al servidor y con los cálculos hechos en el cliente. Importación y exportación CSV funcionarán tanto en navegador como en dispositivos. Los movimientos tendrán fecha, importe, tipo, categoría y nota opcional; las categorías de gasto tendrán presupuestos por mes. Los meses se podrán recorrer para consultar movimientos, resúmenes y presupuestos históricos. Gráficas deterministas se dibujarán con `react-native-svg` ya disponible.
 
-Para que el dashboard sea útil en la primera apertura, el primer inicio mostrará un conjunto pequeño de datos demostrativos marcados claramente como datos de ejemplo, inspirados en el contenido visible del sitio de referencia. El usuario podrá editarlos, borrarlos o importar sus propios movimientos. La divisa inicial será USD para conservar la referencia y sus cifras.
+La app arranca vacía, sin datos de ejemplo: el usuario añade o importa sus propios movimientos. La divisa es el guaraní (PYG), sin decimales; se cambia en `CURRENCY` y `MONEY_LOCALE` de `lib/finance.ts`.
 
 ## Diseño
 
@@ -29,17 +29,17 @@ Para que el dashboard sea útil en la primera apertura, el primer inicio mostrar
 - `app/(tabs)/index.tsx`: resumen del mes, flujo de caja, distribución, insights y actividad reciente.
 - `app/(tabs)/transactions.tsx`: historial mensual, selector de mes y edición/borrado.
 - `app/(tabs)/budgets.tsx`: presupuestos mensuales por categoría, gasto acumulado, disponible y edición.
-- `app/(tabs)/insights.tsx`: análisis automáticos legibles sobre excesos, evolución y presupuesto restante; privacidad local, importación CSV, exportación de respaldo y reinicio de datos de ejemplo.
+- `app/(tabs)/insights.tsx`: análisis automáticos legibles sobre excesos, evolución y presupuesto restante; privacidad local, importación CSV, exportación de respaldo y borrado de datos locales.
 - `components/`: tarjetas reutilizables, selector mensual, barras, formulario de movimiento y modales de categoría/presupuesto.
-- `lib/finance.ts`: tipos, categorías de base, conjunto demo, agregaciones, tendencias e insights sin dependencias de red.
-- `lib/storage.ts`: abstracción de AsyncStorage (nativo) / localStorage (web) y carga inicial del conjunto demo.
+- `lib/finance.ts`: tipos, categorías de base, moneda, agregaciones, tendencias e insights sin dependencias de red.
+- `lib/storage.ts`: abstracción de AsyncStorage (nativo) / localStorage (web).
 - `lib/csv.ts`: exportación con escape CSV e importación con normalización de encabezados, fechas y validación de filas.
 - `lib/AppContext.tsx`: estado reactivo de movimientos, presupuestos, mes seleccionado y acciones; persistencia local con aviso y reintento visibles si la escritura falla.
 - `assets/images/`: iconos de launcher/splash/favicon y variantes Android coordinadas.
 
 ## Flujos funcionales
 
-1. Inicio: la app carga datos locales; si es el primer inicio, carga datos demo identificados. Cambiar de mes recalcula saldos, presupuestos, tendencias e insights.
+1. Inicio: la app carga datos locales; si es el primer inicio, empieza vacía. Cambiar de mes recalcula saldos, presupuestos, tendencias e insights.
 2. Añadir/editar: formulario modal con ingreso/gasto, importe positivo, categoría, fecha y nota opcional. Eliminar solicita confirmación. Las mutaciones se guardan en almacenamiento local.
 3. Presupuestos: crear o ajustar un importe por categoría y mes. Cada categoría muestra gasto, plan, restante y progreso; exceder el plan produce un estado ámbar/coral y un análisis asociado.
 4. Dashboard: presenta ingresos, gasto, saldo después de gastos, presupuesto restante, donut de gasto por categoría, líneas de ingresos/gastos para seis meses, avisos y movimientos recientes.

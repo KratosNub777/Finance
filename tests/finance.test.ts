@@ -1,12 +1,22 @@
 import { describe, expect, it } from "vitest";
 import {
-  createDemoData,
+  formatMoney,
   isValidISODate,
+  parseAmount,
   readableInsights,
   totalBudgetForMonth,
   totalsForMonth,
+  type Budget,
+  type Transaction,
 } from "../lib/finance";
 import { parseTransactionsCSV, transactionsToCSV } from "../lib/csv";
+
+const expense = (
+  id: string,
+  date: string,
+  amount: number,
+  category = "Comer fuera",
+): Transaction => ({ id, kind: "expense", amount, category, date });
 
 describe("Pocketwise finance helpers", () => {
   it("rejects impossible calendar days without changing the selected month", () => {
@@ -16,36 +26,47 @@ describe("Pocketwise finance helpers", () => {
     expect(isValidISODate("26-02-01")).toBe(false);
   });
 
-  it("creates a disclosed example with the 32% dining insight and reference totals", () => {
+  it("formats guaraníes without decimals and reads thousands separators", () => {
+    expect(formatMoney(1586000)).toMatch(/^Gs\.\s1\.586\.000$/);
+    expect(parseAmount("150000")).toBe(150000);
+    expect(parseAmount("150.000")).toBe(150000);
+    expect(parseAmount("Gs. 1.500.000")).toBe(1500000);
+    expect(parseAmount("abc")).toBe(0);
+  });
+
+  it("totals a month and warns when a category exceeds its budget", () => {
     const now = new Date(2026, 9, 23);
-    const sample = createDemoData(now);
-    const month = "2026-10";
-    const insights = readableInsights(
-      sample.transactions,
-      sample.budgets,
-      month,
-      now,
-    );
-    const totals = totalsForMonth(sample.transactions, month);
-    expect(totals.income).toBe(5250);
-    expect(totals.expense).toBeCloseTo(2633.93, 2);
-    expect(totalBudgetForMonth(sample.budgets, month)).toBe(4220);
-    expect(sample.isDemo).toBe(true);
+    const transactions: Transaction[] = [
+      {
+        id: "i",
+        kind: "income",
+        amount: 5000000,
+        category: "Salario",
+        date: "2026-10-05",
+      },
+      expense("a", "2026-10-10", 330000),
+      expense("b", "2026-09-10", 400000),
+    ];
+    const budgets: Budget[] = [
+      { id: "b1", month: "2026-10", category: "Comer fuera", amount: 250000 },
+    ];
+    expect(totalsForMonth(transactions, "2026-10")).toEqual({
+      income: 5000000,
+      expense: 330000,
+    });
+    expect(totalBudgetForMonth(budgets, "2026-10")).toBe(250000);
+    const insights = readableInsights(transactions, budgets, "2026-10", now);
     expect(insights[0].title).toBe(
       "Comer fuera está un 32 % por encima del presupuesto",
     );
     expect(insights[1].title).toBe(
-      "Tu gasto va un 6 % por debajo del mes pasado",
+      "Tu gasto va un 18 % por debajo del mes pasado",
     );
   });
 
   it("round-trips CSV including commas, quotes, and accented category names", () => {
     const transaction = {
-      id: "test-1",
-      kind: "expense" as const,
-      amount: 42.35,
-      category: "Comer fuera",
-      date: "2026-10-22",
+      ...expense("test-1", "2026-10-22", 42350),
       note: 'Cena, "con amistades"',
     };
     const csv = transactionsToCSV([transaction]);
@@ -53,7 +74,7 @@ describe("Pocketwise finance helpers", () => {
     expect(imported.rejected).toBe(0);
     expect(imported.transactions).toHaveLength(1);
     expect(imported.transactions[0]).toMatchObject({
-      amount: 42.35,
+      amount: 42350,
       category: "Comer fuera",
       date: "2026-10-22",
       note: transaction.note,
@@ -62,9 +83,10 @@ describe("Pocketwise finance helpers", () => {
 
   it("skips invalid rows without dropping valid movements", () => {
     const csv =
-      "fecha,tipo,importe,categoría,nota\n2026-10-22,gasto,10,Vivienda,Renta\n2026-02-31,gasto,5,Otros,Fecha inválida";
+      "fecha,tipo,importe,categoría,nota\n2026-10-22,gasto,10.000,Vivienda,Renta\n2026-02-31,gasto,5000,Otros,Fecha inválida";
     const parsed = parseTransactionsCSV(csv);
     expect(parsed.transactions).toHaveLength(1);
+    expect(parsed.transactions[0].amount).toBe(10000);
     expect(parsed.rejected).toBe(1);
   });
 });
